@@ -1,67 +1,123 @@
 {
   "pages": {
-    "/page": [
-      "static/chunks/node_modules_next_dist_01fcdebf._.js",
-      "static/chunks/src_app_icon_svg_mjs_1b2fd05e._.js",
-      "static/chunks/[root-of-the-server]__a126476e._.css",
-      "static/chunks/node_modules_next_dist_client_17dd4d38._.js",
-      "static/chunks/src_app_layout_tsx_68b267f5._.js",
-      "static/chunks/node_modules_next_dist_client_components_builtin_global-error_5803d5f4.js",
-      "static/chunks/node_modules_react-leaflet_lib_index_ad1b8b05.js",
-      "static/chunks/src_d30f7830._.js",
-      "static/chunks/node_modules_bdeffd99._.js",
-      "static/chunks/node_modules_leaflet_dist_leaflet_88e19fd3.css",
-      "static/chunks/src_app_page_tsx_5803d5f4._.js",
-      "static/chunks/[turbopack]_browser_dev_hmr-client_hmr-client_ts_6aaa83c7._.js",
-      "static/chunks/node_modules_next_dist_compiled_react-dom_1f56dc06._.js",
-      "static/chunks/node_modules_next_dist_compiled_next-devtools_index_d575f738.js",
-      "static/chunks/node_modules_next_dist_compiled_0f1b9fd4._.js",
-      "static/chunks/node_modules_next_dist_client_20b209c9._.js",
-      "static/chunks/node_modules_next_dist_445d8acf._.js",
-      "static/chunks/node_modules_@swc_helpers_cjs_8e433861._.js",
-      "static/chunks/_e69f0d32._.js",
-      "static/chunks/_01f48b92._.js"
+    "/_not-found/page": [
+      "static/chunks/webpack-8df933af9aa540c0.js",
+      "static/chunks/4bd1b696-cf72ae8a39fa05aa.js",
+      "static/chunks/964-7a34cadcb7695cec.js",
+      "static/chunks/main-app-e28dccdf52378d8f.js",
+      "static/chunks/app/_not-found/page-002b7ca6b35ad6a0.js"
+    ],
+    "/api/create-horoscope-subscription/route": [
+      "static/chunks/webpack-8df933af9aa540c0.js",
+      "static/chunks/4bd1b696-cf72ae8a39fa05aa.js",
+      "static/chunks/964-7a34cadcb7695cec.js",
+      "static/chunks/main-app-e28dccdf52378d8f.js",
+      "static/chunks/app/api/create-horoscope-subscription/route-b806b3186362213c.js"
+    ],
+    "/api/check-horoscope-subscription/route": [
+      "static/chunks/webpack-8df933af9aa540c0.js",
+      "static/chunks/4bd1b696-cf72ae8a39fa05aa.js",
+      "static/chunks/964-7a34cadcb7695cec.js",
+      "static/chunks/main-app-e28dccdf52378d8f.js",
+      "static/chunks/app/api/check-horoscope-subscription/route-b806b3186362213c.js"
+    ],
+    "/api/generate-daily-horoscope/route": [
+      "static/chunks/webpack-8df933af9aa540c0.js",
+      "static/chunks/4bd1b696-cf72ae8a39fa05aa.js",
+      "static/chunks/964-7a34cadcb7695cec.js",
+      "static/chunks/main-app-e28dccdf52378d8f.js",
+      "static/chunks/app/api/generate-daily-horoscope/route-b806b3186362213c.js"
+    ],
+    "/layout": [
+      "static/chunks/webpack-8df933af9aa540c0.js",
+      "static/chunks/4bd1b696-cf72ae8a39fa05aa.js",
+      "static/chunks/964-7a34cadcb7695cec.js",
+      "static/chunks/main-app-e28dccdf52378d8f.js",
+      "static/css/de70bee13400563f.css",
+      "static/css/68de03cc811a4905.css",
+      "static/css/3bd3d6e8d37ebfdc.css",
+      "static/chunks/app/layout-8e5e89ed4e8bb9f7.js"
+    ],
+    "/api/get-report/route": [
+      "static/chunks/webpack-8df933af9aa540c0.js",
+      "static/chunks/4bd1b696-cf72ae8a39fa05aa.js",
+      "static/chunks/964-7a34cadcb7695cec.js",
+      "static/chunks/main-app-e28dccdf52378d8f.js",
+      "static/chunks/app/api/get-report/route-b806b3186362213c.js"
+    ],
+    "/api/create-kirvano-payment/route": [
+      "static/chunks/webpack-8df933af9aa540c0.js",
+      "static/chunks/4bd1b696-cf72ae8a39fa05aa.js",
+      "static/chunks/964-7a34cadcb7695cec.js",
+      "static/chunks/main-app-e28dccdf52378d8f.js",
+      "static/chunks/app/api/create-kirvano-payment/route-b806b3186362213c.js"
+    ],
+    "/api/kirvano-webhook/route": [
+      "static/chunks/webpack-8df933af9aa540c0.js",
+      "static/chunks/4bd1b696-cf72ae8a39fa05aa.js",
+      "static/chunks/964-7a34cadcb7695cec.js",
+      "static/chunks/main-app-e28dccdf52378d8f.js",
+      "static/chunks/app/api/kirvano-webhook/route-b806b3186362213c.js"
+    ],
+    "/api/get-latest-payment/route": [
+      "static/chunks/webpack-8df933af9aa540c0.js",
+      "static/chunks/4bd1b696-cf72ae8a39fa05aa.js",
+      "static/chunks/964-7a34cadcb7695cec.js",
+      "static/chunks/main-app-e28dccdf52378d8f.js",
+      "static/chunks/app/api/get-latest-payment/route-b806b3186362213c.js"
+    ],
+    "/payment/cancel/page": [
+      "static/chunks/webpack-8df933af9aa540c0.js",
+      "static/chunks/4bd1b696-cf72ae8a39fa05aa.js",
+      "static/chunks/964-7a34cadcb7695cec.js",
+      "static/chunks/main-app-e28dccdf52378d8f.js",
+      "static/chunks/95-f8676a3bee788818.js",
+      "static/chunks/app/payment/cancel/page-2a75453423514370.js"
+    ],
+    "/payment/horoscope-success/page": [
+      "static/chunks/webpack-8df933af9aa540c0.js",
+      "static/chunks/4bd1b696-cf72ae8a39fa05aa.js",
+      "static/chunks/964-7a34cadcb7695cec.js",
+      "static/chunks/main-app-e28dccdf52378d8f.js",
+      "static/chunks/app/payment/horoscope-success/page-b08aef5bcfbaa1ad.js"
     ],
     "/payment/redirect/page": [
-      "static/chunks/node_modules_next_dist_01fcdebf._.js",
-      "static/chunks/src_app_icon_svg_mjs_1b2fd05e._.js",
-      "static/chunks/[root-of-the-server]__a126476e._.css",
-      "static/chunks/node_modules_next_dist_client_17dd4d38._.js",
-      "static/chunks/src_app_layout_tsx_68b267f5._.js",
-      "static/chunks/node_modules_next_dist_client_components_builtin_global-error_5803d5f4.js",
-      "static/chunks/_536c0663._.js",
-      "static/chunks/src_app_payment_redirect_page_tsx_5803d5f4._.js",
-      "static/chunks/[turbopack]_browser_dev_hmr-client_hmr-client_ts_6aaa83c7._.js",
-      "static/chunks/node_modules_next_dist_compiled_react-dom_1f56dc06._.js",
-      "static/chunks/node_modules_next_dist_compiled_next-devtools_index_d575f738.js",
-      "static/chunks/node_modules_next_dist_compiled_0f1b9fd4._.js",
-      "static/chunks/node_modules_next_dist_client_20b209c9._.js",
-      "static/chunks/node_modules_next_dist_445d8acf._.js",
-      "static/chunks/node_modules_@swc_helpers_cjs_8e433861._.js",
-      "static/chunks/_e69f0d32._.js",
-      "static/chunks/_01f48b92._.js"
+      "static/chunks/webpack-8df933af9aa540c0.js",
+      "static/chunks/4bd1b696-cf72ae8a39fa05aa.js",
+      "static/chunks/964-7a34cadcb7695cec.js",
+      "static/chunks/main-app-e28dccdf52378d8f.js",
+      "static/chunks/app/payment/redirect/page-e4d47fffaa74448a.js"
+    ],
+    "/page": [
+      "static/chunks/webpack-8df933af9aa540c0.js",
+      "static/chunks/4bd1b696-cf72ae8a39fa05aa.js",
+      "static/chunks/964-7a34cadcb7695cec.js",
+      "static/chunks/main-app-e28dccdf52378d8f.js",
+      "static/css/1de76be520b4de19.css",
+      "static/chunks/d0deef33-53a40f89e3d32118.js",
+      "static/chunks/669-a6a7b3b762f5884e.js",
+      "static/chunks/717-295726383ac410c9.js",
+      "static/chunks/app/page-4409001f9864b950.js"
+    ],
+    "/payment/success/page": [
+      "static/chunks/webpack-8df933af9aa540c0.js",
+      "static/chunks/4bd1b696-cf72ae8a39fa05aa.js",
+      "static/chunks/964-7a34cadcb7695cec.js",
+      "static/chunks/main-app-e28dccdf52378d8f.js",
+      "static/chunks/95-f8676a3bee788818.js",
+      "static/chunks/app/payment/success/page-744e065e5ea5aa8d.js"
     ],
     "/success/page": [
-      "static/chunks/node_modules_next_dist_01fcdebf._.js",
-      "static/chunks/src_app_icon_svg_mjs_1b2fd05e._.js",
-      "static/chunks/[root-of-the-server]__a126476e._.css",
-      "static/chunks/node_modules_next_dist_client_17dd4d38._.js",
-      "static/chunks/src_app_layout_tsx_68b267f5._.js",
-      "static/chunks/node_modules_next_dist_client_components_builtin_global-error_5803d5f4.js",
-      "static/chunks/node_modules_react-leaflet_lib_index_8277becf.js",
-      "static/chunks/src_246f64f2._.js",
-      "static/chunks/node_modules_1191c8b9._.js",
-      "static/chunks/node_modules_leaflet_dist_leaflet_88e19fd3.css",
-      "static/chunks/src_app_success_page_tsx_5803d5f4._.js",
-      "static/chunks/[turbopack]_browser_dev_hmr-client_hmr-client_ts_6aaa83c7._.js",
-      "static/chunks/node_modules_next_dist_compiled_react-dom_1f56dc06._.js",
-      "static/chunks/node_modules_next_dist_compiled_next-devtools_index_d575f738.js",
-      "static/chunks/node_modules_next_dist_compiled_0f1b9fd4._.js",
-      "static/chunks/node_modules_next_dist_client_20b209c9._.js",
-      "static/chunks/node_modules_next_dist_445d8acf._.js",
-      "static/chunks/node_modules_@swc_helpers_cjs_8e433861._.js",
-      "static/chunks/_e69f0d32._.js",
-      "static/chunks/_01f48b92._.js"
+      "static/chunks/webpack-8df933af9aa540c0.js",
+      "static/chunks/4bd1b696-cf72ae8a39fa05aa.js",
+      "static/chunks/964-7a34cadcb7695cec.js",
+      "static/chunks/main-app-e28dccdf52378d8f.js",
+      "static/css/1de76be520b4de19.css",
+      "static/chunks/d0deef33-53a40f89e3d32118.js",
+      "static/chunks/95-f8676a3bee788818.js",
+      "static/chunks/669-a6a7b3b762f5884e.js",
+      "static/chunks/717-295726383ac410c9.js",
+      "static/chunks/app/success/page-726272685f1f2a45.js"
     ]
   }
 }
