@@ -1,0 +1,17 @@
+{
+  "paymentId": "kirvano_1759513335628_r8korke8f",
+  "customerData": {
+    "name": "Camila Mota",
+    "email": "camilamayaramota@gmail.com"
+  },
+  "personalData": {
+    "fullName": "Camila Mota",
+    "email": "camilamayaramota@gmail.com",
+    "birthDate": "1991-05-28",
+    "birthTime": "",
+    "birthPlace": ""
+  },
+  "timestamp": "2025-10-03T17:42:15.628Z",
+  "planType": "relatorio-mistico-completo",
+  "amount": 80
+}

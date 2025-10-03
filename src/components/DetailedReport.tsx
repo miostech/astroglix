@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Calculator, Star, Sparkles, TrendingUp, Calendar, AlertCircle, Target, Award, Heart, Shield, Gem, Lightbulb, Crown, CheckCircle, CreditCard, Lock } from 'lucide-react'
+import { Calculator, Star, Sparkles, TrendingUp, Calendar, AlertCircle, Target, Award, Heart, Shield, Gem, Lightbulb, Crown, CheckCircle, CreditCard, Lock, Moon, Globe } from 'lucide-react'
 import { getNumberInterpretation } from '@/lib/numerology-interpretations'
 import { getSignInterpretation } from '@/lib/astrology-interpretations'
 import { 
@@ -237,7 +237,7 @@ function HoroscopeInline({ personalData }: { personalData: { fullName: string; e
         </h3>
         <div className="bg-white dark:bg-gray-800 rounded-xl p-4 inline-block">
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            ✨ Suas energias cósmicas para hoje ✨
+Análise astrológica para o dia atual
           </p>
         </div>
       </div>
@@ -488,7 +488,7 @@ export default function DetailedReport({ reportData }: DetailedReportProps) {
             <div>
               <h4 className="flex items-center gap-2 text-lg font-semibold text-green-600 dark:text-green-400 mb-3">
                 <Sparkles className="w-5 h-5" />
-                ✨ Pontos Positivos
+Pontos Positivos
               </h4>
               <ul className="space-y-2 ml-7">
                 {(lifePathInterp.positiveTraits || []).map((trait, idx) => (
@@ -503,7 +503,7 @@ export default function DetailedReport({ reportData }: DetailedReportProps) {
             <div>
               <h4 className="flex items-center gap-2 text-lg font-semibold text-orange-600 dark:text-orange-400 mb-3">
                 <AlertCircle className="w-5 h-5" />
-                ⚠️ Pontos de Atenção
+Pontos de Atenção
               </h4>
               <ul className="space-y-2 ml-7">
                 {(lifePathInterp.negativeTraits || []).map((trait, idx) => (
@@ -518,7 +518,7 @@ export default function DetailedReport({ reportData }: DetailedReportProps) {
             <div>
               <h4 className="flex items-center gap-2 text-lg font-semibold text-blue-600 dark:text-blue-400 mb-3">
                 <Target className="w-5 h-5" />
-                🎯 O Que Fazer
+Orientações
               </h4>
               <ul className="space-y-2 ml-7">
                 {(lifePathInterp.guidance || []).map((guide, idx) => (
@@ -569,7 +569,7 @@ export default function DetailedReport({ reportData }: DetailedReportProps) {
 
           <div className="space-y-4">
             <div className="bg-blue-50 dark:bg-blue-900/30 rounded-xl p-4">
-              <p className="font-semibold text-blue-700 dark:text-blue-300 mb-2">✨ Dons e Talentos</p>
+              <p className="font-semibold text-blue-700 dark:text-blue-300 mb-2">Dons e Talentos</p>
               <ul className="space-y-1">
                 {(destinyInterp.positiveTraits || []).slice(0, 4).map((trait, idx) => (
                   <li key={idx} className="text-sm text-gray-700 dark:text-gray-300">• {trait}</li>
@@ -577,7 +577,7 @@ export default function DetailedReport({ reportData }: DetailedReportProps) {
               </ul>
             </div>
             <div className="bg-cyan-50 dark:bg-cyan-900/30 rounded-xl p-4">
-              <p className="font-semibold text-cyan-700 dark:text-cyan-300 mb-2">🎯 Caminho Para Realização</p>
+              <p className="font-semibold text-cyan-700 dark:text-cyan-300 mb-2">Caminho Para Realização</p>
               <p className="text-sm text-gray-700 dark:text-gray-300">{destinyInterp.guidance?.[0] || 'Busque seu propósito'}</p>
             </div>
           </div>
@@ -599,11 +599,11 @@ export default function DetailedReport({ reportData }: DetailedReportProps) {
 
           <div className="space-y-4">
             <div className="bg-yellow-50 dark:bg-yellow-900/30 rounded-xl p-4">
-              <p className="font-semibold text-yellow-700 dark:text-yellow-300 mb-2">💫 O Que Sua Alma Deseja</p>
+              <p className="font-semibold text-yellow-700 dark:text-yellow-300 mb-2">Motivações Profundas</p>
               <p className="text-sm text-gray-700 dark:text-gray-300">{soulInterp.spirituality}</p>
             </div>
             <div className="bg-orange-50 dark:bg-orange-900/30 rounded-xl p-4">
-              <p className="font-semibold text-orange-700 dark:text-orange-300 mb-2">🔥 Paixões Internas</p>
+              <p className="font-semibold text-orange-700 dark:text-orange-300 mb-2">Paixões Internas</p>
               <ul className="space-y-1">
                 {(soulInterp.positiveTraits || []).slice(0, 3).map((trait, idx) => (
                   <li key={idx} className="text-sm text-gray-700 dark:text-gray-300">• {trait}</li>
@@ -775,7 +775,7 @@ export default function DetailedReport({ reportData }: DetailedReportProps) {
         {/* Dívidas Cármicas */}
         {numerology.karmicDebts && Array.isArray(numerology.karmicDebts) && numerology.karmicDebts.length > 0 && (
           <div className="bg-gradient-to-r from-purple-100 to-red-100 dark:from-purple-900/50 dark:to-red-900/50 rounded-xl p-6 mt-6 border-2 border-purple-300 dark:border-purple-700">
-            <h4 className="text-xl font-bold text-purple-800 dark:text-purple-200 mb-3">🔮 Dívidas Cármicas Detectadas</h4>
+            <h4 className="text-xl font-bold text-purple-800 dark:text-purple-200 mb-3">Lições Cármicas Identificadas</h4>
             <div className="flex gap-3 mb-3">
               {(numerology.karmicDebts || []).map((debt: number, idx: number) => (
                 <div key={idx} className="bg-white dark:bg-gray-800 rounded-full w-12 h-12 flex items-center justify-center shadow-lg">
@@ -823,13 +823,13 @@ export default function DetailedReport({ reportData }: DetailedReportProps) {
 
           <div className="space-y-6">
             <div className="bg-orange-50 dark:bg-orange-900/30 rounded-xl p-5">
-              <p className="font-semibold text-orange-700 dark:text-orange-300 mb-2">☀️ Sua Essência Solar</p>
+              <p className="font-semibold text-orange-700 dark:text-orange-300 mb-2">Essência Solar</p>
               <p className="text-gray-700 dark:text-gray-300">{sunSignInterp.inSun}</p>
             </div>
 
             <div className="grid md:grid-cols-2 gap-4">
               <div className="bg-green-50 dark:bg-green-900/30 rounded-xl p-4">
-                <p className="font-semibold text-green-700 dark:text-green-300 mb-2">✨ Qualidades Positivas</p>
+                <p className="font-semibold text-green-700 dark:text-green-300 mb-2">Qualidades Positivas</p>
                 <ul className="space-y-1">
                   {(sunSignInterp.positiveTraits || []).map((trait, idx) => (
                     <li key={idx} className="text-sm text-gray-700 dark:text-gray-300">• {trait}</li>
@@ -837,7 +837,7 @@ export default function DetailedReport({ reportData }: DetailedReportProps) {
                 </ul>
               </div>
               <div className="bg-orange-50 dark:bg-orange-900/30 rounded-xl p-4">
-                <p className="font-semibold text-orange-700 dark:text-orange-300 mb-2">⚠️ Desafios</p>
+                <p className="font-semibold text-orange-700 dark:text-orange-300 mb-2">Desafios</p>
                 <ul className="space-y-1">
                   {(sunSignInterp.negativeTraits || []).map((trait, idx) => (
                     <li key={idx} className="text-sm text-gray-700 dark:text-gray-300">• {trait}</li>
@@ -871,7 +871,7 @@ export default function DetailedReport({ reportData }: DetailedReportProps) {
         <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-xl mb-8">
           <div className="flex items-center gap-4 mb-6">
             <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
-              <span className="text-3xl">🌙</span>
+              <Moon className="w-8 h-8 text-blue-500" />
             </div>
             <div>
               <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100">
@@ -883,7 +883,7 @@ export default function DetailedReport({ reportData }: DetailedReportProps) {
 
           <div className="space-y-4">
             <div className="bg-purple-50 dark:bg-purple-900/30 rounded-xl p-5">
-              <p className="font-semibold text-purple-700 dark:text-purple-300 mb-2">🌙 Mundo Emocional</p>
+              <p className="font-semibold text-purple-700 dark:text-purple-300 mb-2">Mundo Emocional</p>
               <p className="text-gray-700 dark:text-gray-300">{moonSignInterp.inMoon}</p>
             </div>
             <div className="grid md:grid-cols-2 gap-4">
@@ -922,7 +922,7 @@ export default function DetailedReport({ reportData }: DetailedReportProps) {
         {/* Aspectos e Trânsitos */}
         <div className="grid md:grid-cols-2 gap-6">
           <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg">
-            <h4 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4">🌟 Aspectos Importantes</h4>
+            <h4 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4">Aspectos Importantes</h4>
             <ul className="space-y-3">
               {astrology.aspects?.slice(0, 4).map((aspect: string, idx: number) => (
                 <li key={idx} className="flex items-start bg-blue-50 dark:bg-blue-900/30 rounded-lg p-3">
@@ -951,7 +951,7 @@ export default function DetailedReport({ reportData }: DetailedReportProps) {
       <div id="zodiaco-chines" className="bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-900 dark:to-orange-900 rounded-3xl p-6 sm:p-10 shadow-2xl scroll-mt-24">
         <div className="text-center mb-8">
           <div className="w-20 h-20 bg-gradient-to-r from-red-500 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg text-4xl">
-            🐉
+            <span className="text-2xl font-bold text-red-600">龍</span>
           </div>
           <h2 className="text-4xl font-bold text-gray-800 dark:text-gray-100 mb-3">
             3. Astrologia Chinesa
@@ -974,7 +974,7 @@ export default function DetailedReport({ reportData }: DetailedReportProps) {
 
           <div className="grid md:grid-cols-2 gap-6 mb-6">
             <div className="bg-red-50 dark:bg-red-900/30 rounded-xl p-5">
-              <h4 className="font-bold text-red-700 dark:text-red-300 mb-3">✨ Forças e Talentos</h4>
+              <h4 className="font-bold text-red-700 dark:text-red-300 mb-3">Forças e Talentos</h4>
               <p className="text-gray-700 dark:text-gray-300 text-sm mb-3">{chineseZodiac.strengths}</p>
               <div className="flex flex-wrap gap-2">
                 {chineseZodiac.traits?.map((trait: string, idx: number) => (
@@ -986,9 +986,9 @@ export default function DetailedReport({ reportData }: DetailedReportProps) {
             </div>
 
             <div className="bg-orange-50 dark:bg-orange-900/30 rounded-xl p-5">
-              <h4 className="font-bold text-orange-700 dark:text-orange-300 mb-3">⚠️ Desafios</h4>
+              <h4 className="font-bold text-orange-700 dark:text-orange-300 mb-3">Desafios</h4>
               <p className="text-gray-700 dark:text-gray-300 text-sm mb-3">{chineseZodiac.weaknesses}</p>
-              <p className="text-gray-700 dark:text-gray-300 text-sm font-semibold">🎯 O que fazer:</p>
+              <p className="text-gray-700 dark:text-gray-300 text-sm font-semibold">Orientações:</p>
               <p className="text-gray-600 dark:text-gray-400 text-xs">{chineseZodiac.challenges}</p>
             </div>
           </div>
@@ -1023,7 +1023,7 @@ export default function DetailedReport({ reportData }: DetailedReportProps) {
           </div>
 
           <div className="bg-gradient-to-r from-orange-100 to-red-100 dark:from-orange-900/50 dark:to-red-900/50 rounded-xl p-4">
-            <p className="font-bold text-orange-700 dark:text-orange-300 mb-2">🔢 Números da Sorte</p>
+            <p className="font-bold text-orange-700 dark:text-orange-300 mb-2">Números da Sorte</p>
             <div className="flex gap-3 justify-center">
               {chineseZodiac.luckyNumbers?.map((number: number, idx: number) => (
                 <div key={idx} className="w-12 h-12 bg-white dark:bg-gray-800 rounded-full flex items-center justify-center shadow-lg">
@@ -1063,7 +1063,7 @@ export default function DetailedReport({ reportData }: DetailedReportProps) {
             <div className="space-y-4">
               <div className="bg-white dark:bg-gray-800 rounded-xl p-5">
                 <h5 className="font-bold text-green-600 dark:text-green-400 mb-2 flex items-center gap-2">
-                  <span className="text-2xl">✅</span> Oportunidades e Pontos Positivos
+                  <CheckCircle className="w-6 h-6 text-green-500" /> Oportunidades e Pontos Positivos
                 </h5>
                 <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
                   {yearImpact.positive}
@@ -1072,7 +1072,7 @@ export default function DetailedReport({ reportData }: DetailedReportProps) {
 
               <div className="bg-white dark:bg-gray-800 rounded-xl p-5">
                 <h5 className="font-bold text-orange-600 dark:text-orange-400 mb-2 flex items-center gap-2">
-                  <span className="text-2xl">⚠️</span> Cuidados e Desafios
+                  <AlertCircle className="w-6 h-6 text-orange-500" /> Cuidados e Desafios
                 </h5>
                 <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
                   {yearImpact.negative}
@@ -1081,7 +1081,7 @@ export default function DetailedReport({ reportData }: DetailedReportProps) {
 
               <div className="bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-900/50 dark:to-indigo-900/50 rounded-xl p-5 border-l-4 border-purple-500">
                 <h5 className="font-bold text-purple-700 dark:text-purple-300 mb-2 flex items-center gap-2">
-                  <span className="text-2xl">💡</span> Conselho Especializado
+                  <Lightbulb className="w-6 h-6 text-blue-500" /> Conselho Especializado
                 </h5>
                 <p className="text-gray-700 dark:text-gray-300 leading-relaxed font-medium">
                   {yearImpact.advice}
@@ -1096,7 +1096,7 @@ export default function DetailedReport({ reportData }: DetailedReportProps) {
       <div id="astrocartografia" className="bg-gradient-to-br from-green-50 to-teal-50 dark:from-green-900 dark:to-teal-900 rounded-3xl p-6 sm:p-10 shadow-2xl scroll-mt-24">
         <div className="text-center mb-8">
           <div className="w-20 h-20 bg-gradient-to-r from-green-500 to-teal-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg text-4xl">
-            🌍
+            <Globe className="w-10 h-10 text-green-500" />
           </div>
           <h2 className="text-4xl font-bold text-gray-800 dark:text-gray-100 mb-3">
             4. Astrocartografia
@@ -1134,7 +1134,7 @@ export default function DetailedReport({ reportData }: DetailedReportProps) {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
           <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg">
             <h4 className="font-bold text-yellow-700 dark:text-yellow-300 mb-3 flex items-center gap-2">
-              ☀️ Linhas Solares
+              Linhas Solares
             </h4>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">Liderança, reconhecimento, vitalidade</p>
             <ul className="space-y-2">
@@ -1148,7 +1148,7 @@ export default function DetailedReport({ reportData }: DetailedReportProps) {
 
           <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg">
             <h4 className="font-bold text-purple-700 dark:text-purple-300 mb-3 flex items-center gap-2">
-              🌙 Linhas Lunares
+              Linhas Lunares
             </h4>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">Emoções, lar, segurança</p>
             <ul className="space-y-2">
@@ -1177,7 +1177,7 @@ export default function DetailedReport({ reportData }: DetailedReportProps) {
 
         {/* Locais Favoráveis por Categoria */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-xl mb-6">
-          <h4 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6">✨ Seus Destinos Ideais</h4>
+          <h4 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6">Locais de Potencial</h4>
           <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
             Locais onde suas energias planetárias fluem harmoniosamente. Ótimos para morar, trabalhar ou visitar!
           </p>
@@ -1188,7 +1188,7 @@ export default function DetailedReport({ reportData }: DetailedReportProps) {
                 <ul className="space-y-2">
                   {(Array.isArray(locations) ? locations : []).slice(0, 3).map((loc: string, idx: number) => (
                     <li key={idx} className="text-sm text-gray-700 dark:text-gray-300 flex items-start">
-                      <span className="text-green-500 mr-2">✓</span>
+                      <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
                       {loc}
                     </li>
                   ))}
@@ -1202,7 +1202,7 @@ export default function DetailedReport({ reportData }: DetailedReportProps) {
         {astrocartography.challengingLocations && Object.keys(astrocartography.challengingLocations).length > 0 && (
           <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-xl border-2 border-orange-200 dark:border-orange-800">
             <h4 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6 flex items-center gap-2">
-              ⚠️ Locais que Requerem Atenção Especial
+              Locais que Requerem Atenção Especial
             </h4>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
               Estes locais podem apresentar desafios ou tensões energéticas. Não significa que você não deva visitá-los, 
@@ -1213,7 +1213,7 @@ export default function DetailedReport({ reportData }: DetailedReportProps) {
               {Object.entries(astrocartography.challengingLocations).map(([category, locations]: [string, any]) => (
                 <div key={category} className="bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/30 dark:to-red-900/30 rounded-xl p-5 border-l-4 border-orange-500">
                   <h5 className="font-bold text-orange-700 dark:text-orange-300 mb-3 flex items-center gap-2">
-                    <span className="text-xl">⚠️</span>
+                    <AlertCircle className="w-5 h-5 text-orange-500" />
                     {category}
                   </h5>
                   <ul className="space-y-2">
@@ -1226,7 +1226,7 @@ export default function DetailedReport({ reportData }: DetailedReportProps) {
                   </ul>
                   <div className="mt-3 p-3 bg-white dark:bg-gray-800 rounded-lg">
                     <p className="text-xs text-gray-600 dark:text-gray-400">
-                      <strong className="text-orange-600 dark:text-orange-400">💡 O que fazer:</strong> Visite com consciência, 
+                      <strong className="text-orange-600 dark:text-orange-400">Orientações:</strong> Visite com consciência, 
                       pratique autocuidado extra, estabeleça limites claros e busque apoio quando necessário.
                     </p>
                   </div>

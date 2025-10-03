@@ -1,0 +1,17 @@
+{
+  "paymentId": "kirvano_1759512844526_lde9f6ujl",
+  "customerData": {
+    "name": "Oscar Augusto da Silva",
+    "email": "oscarsilva@mios.pt"
+  },
+  "personalData": {
+    "fullName": "Oscar Augusto da Silva",
+    "email": "oscarsilva@mios.pt",
+    "birthDate": "1995-07-10",
+    "birthTime": "13:00",
+    "birthPlace": "São Paulo"
+  },
+  "timestamp": "2025-10-03T17:34:04.526Z",
+  "planType": "relatorio-mistico-completo",
+  "amount": 80
+}

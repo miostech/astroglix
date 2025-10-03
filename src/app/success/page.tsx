@@ -713,13 +713,13 @@ function SuccessPageContent() {
                 )}
               </button>
               
-              <Link 
+              {/* <Link 
                 href="/"
                 className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-300 shadow-lg"
               >
                 <ArrowLeft className="w-4 h-4" />
                 Gerar Novo Relatório
-              </Link>
+              </Link> */}
             </div>
           </div>
         </div>
