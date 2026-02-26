@@ -126,11 +126,25 @@
   }
   body {
     @apply bg-background text-foreground;
+    /* Evitar zoom em inputs no iOS */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    /* Safe area para notch/home indicator */
+    padding-left: env(safe-area-inset-left, 0);
+    padding-right: env(safe-area-inset-right, 0);
   }
-  
-  /* Scroll suave para âncoras */
   html {
     scroll-behavior: smooth;
+  }
+  /* Touch targets mínimos (44px) e evitar highlight azul no mobile */
+  button, a, [role="button"] {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  /* Evitar overflow horizontal em textos longos */
+  p, li, span, h1, h2, h3, h4 {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
   }
 }
 
@@ -161,49 +175,93 @@
   body {
     background: white !important;
   }
-  
-  /* Ocultar elementos que não devem aparecer no PDF */
-  button, 
-  a[href="/"],
+
   .no-print {
     display: none !important;
   }
-  
-  /* Otimizar cores para impressão */
+
+  button {
+    display: none !important;
+  }
+
+  /* Preservar cores e gradientes na impressão (printBackground) */
   * {
     color-adjust: exact;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
-  
-  /* Evitar quebras de página indesejadas */
-  .bg-white,
-  .bg-gradient-to-br,
-  .bg-gradient-to-r,
-  .rounded-2xl,
-  .rounded-xl,
-  .shadow-xl {
-    page-break-inside: avoid;
-    break-inside: avoid;
+
+  @page {
+    size: A4;
+    margin: 20mm;
   }
-  
-  /* Ocultar mapa interativo no PDF */
-  .leaflet-container {
-    display: none !important;
+}
+
+/* Mystical Animations */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 10px rgba(168, 85, 247, 0.4); }
+  50% { box-shadow: 0 0 20px rgba(236, 72, 153, 0.6); }
+}
+
+@keyframes shimmer {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 20px, 0);
   }
-  
-  /* Ajustar tamanhos para impressão */
-  .container {
-    max-width: 100% !important;
-    padding: 0 !important;
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
   }
-  
-  /* Garantir que cores sejam impressas */
-  .bg-purple-50,
-  .bg-pink-50,
-  .bg-blue-50,
-  .bg-green-50,
-  .bg-red-50 {
-    background-color: #faf5ff !important;
-  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 3s infinite;
+}
+
+.animate-shimmer {
+  background-size: 200% 200%;
+  animation: shimmer 5s ease infinite;
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.delay-100 { animation-delay: 100ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-500 { animation-delay: 500ms; }
+
+/* Mystical Background */
+.bg-stars {
+  background-color: transparent;
+  background-image: 
+    radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 3px),
+    radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 2px),
+    radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 3px);
+  background-size: 550px 550px, 350px 350px, 250px 250px;
+  background-position: 0 0, 40px 60px, 130px 270px;
+}
+
+.dark .bg-stars {
+  background-image: 
+    radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 3px),
+    radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 2px),
+    radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 3px);
 }

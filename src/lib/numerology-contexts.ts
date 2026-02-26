@@ -108,8 +108,34 @@ export function getPersonalYearMeaning(number: number): string {
   return personalYearMeanings[number] || "Ano de crescimento pessoal"
 }
 
-export function getLifeCycleMeaning(number: number): string {
-  return lifeCycleMeanings[number] || "Ciclo de aprendizado"
+/** Frase curta para visão geral do ano (ex: "2026 será um ano de ... para você") */
+export const personalYearOverview: { [key: number]: string } = {
+  1: "novos começos e iniciativas",
+  2: "parcerias e cooperação",
+  3: "criatividade e expressão",
+  4: "construção e trabalho sólido",
+  5: "mudanças e liberdade",
+  6: "responsabilidade e harmonia",
+  7: "introspecção e espiritualidade",
+  8: "poder e realização material",
+  9: "conclusão e humanitarismo"
+}
+
+export function getPersonalYearOverview(number: number): string {
+  return personalYearOverview[number] ?? "crescimento pessoal"
+}
+
+const lifeCycleFallbacks: { 1: string; 2: string; 3: string } = {
+  1: "Ciclo de aprendizado e formação — Fase de descoberta, construção da identidade e bases para a vida.",
+  2: "Ciclo de realização — Fase de construção, ação, conquistas e maturidade no mundo.",
+  3: "Ciclo de sabedoria — Fase de integração, reflexão e compartilhamento do que foi vivido.",
+}
+
+export function getLifeCycleMeaning(number: number, cyclePosition?: 1 | 2 | 3): string {
+  const meaning = lifeCycleMeanings[number]
+  if (meaning) return meaning
+  if (cyclePosition) return lifeCycleFallbacks[cyclePosition]
+  return "Ciclo de aprendizado"
 }
 
 export function getChallengeMeaning(number: number): string {

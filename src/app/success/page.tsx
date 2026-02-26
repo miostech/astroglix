@@ -346,7 +346,7 @@ function SuccessPageContent() {
     }
   }
 
-  const calculateAstrocartography = (fullName: string, date: string, time: string, place: string) => {
+  const calculateAstrocartography = (fullName: string, date: string, time: string, place: string, currentCity?: string) => {
     const generatePersonalHash = (data: string): number => {
       let hash = 0
       for (let i = 0; i < data.length; i++) {
@@ -388,6 +388,44 @@ function SuccessPageContent() {
     const moonLines = selectPersonalizedLocations(worldLocations.lunar, moonIndex, 4)
     const venusLines = selectPersonalizedLocations(worldLocations.venus, venusIndex, 4)
 
+    let currentCityAnalysis: { city: string; benefits: string[]; pointsOfAttention: string[] } | undefined
+    if (currentCity && currentCity.trim()) {
+      const cityHash = generatePersonalHash(`${fullName}${date}${currentCity.trim()}`.toLowerCase().replace(/\s/g, ''))
+      const benefitsPool = [
+        'Favorece sua expressão pessoal e visibilidade; aproveite para projetos que queiram destacar.',
+        'A energia do local apoia relacionamentos e parcerias; bom momento para cultivar vínculos.',
+        'Propício para estudo, introspecção e crescimento espiritual; reserve tempo para reflexão.',
+        'Estimula criatividade e comunicação; ideal para trabalhos em equipe e networking.',
+        'Favorece estabilidade financeira e construção de bases sólidas; bom para planejamento de longo prazo.',
+        'A região ressoa com suas energias de liderança; oportunidades de assumir mais protagonismo.',
+        'Benéfico para saúde e rotinas; aproveite para consolidar hábitos saudáveis.',
+        'Energia favorável para decisões importantes e fechamento de ciclos.'
+      ]
+      const attentionPool = [
+        'Evite tomar decisões impulsivas em períodos de stress; espere a poeira baixar.',
+        'Cuide de limites em relacionamentos para não sobrecarregar-se emocionalmente.',
+        'Atenção a gastos e compromissos financeiros; mantenha uma reserva de segurança.',
+        'Possível tendência ao isolamento; equilibre solitude com encontros que fazem bem.',
+        'Períodos de maior sensibilidade; proteja-se de ambientes ou pessoas tóxicas.',
+        'Evite assumir responsabilidades demais; priorize o que é essencial.',
+        'Atenção à saúde em mudanças de rotina ou viagens; descanse o suficiente.',
+        'Comunicação pode gerar mal-entendidos; confirme combinados por escrito quando for importante.'
+      ]
+      const pickFrom = (arr: string[], n: number) => {
+        const out: string[] = []
+        for (let i = 0; i < n; i++) {
+          const idx = (cityHash + i * 11 + birthDay) % arr.length
+          out.push(arr[idx])
+        }
+        return out
+      }
+      currentCityAnalysis = {
+        city: currentCity.trim(),
+        benefits: pickFrom(benefitsPool, 3),
+        pointsOfAttention: pickFrom(attentionPool, 3)
+      }
+    }
+
     return {
       sunLines,
       moonLines,
@@ -409,7 +447,8 @@ function SuccessPageContent() {
         `Baseado em sua data de nascimento, ${venusLines[0]} oferece as melhores oportunidades românticas`,
         `Seu local de nascimento (${place}) cria uma conexão especial com ${moonLines[0]} para equilíbrio emocional`
       ],
-      personalizedAnalysis: `Baseado em sua configuração astrológica única - nascido(a) em ${new Date(date).toLocaleDateString('pt-BR')} ${time ? `às ${time}` : ''} em ${place} - seu mapa astrocartográfico revela padrões energéticos específicos. Suas linhas planetárias mais poderosas se concentram em ${sunLines[0]} (linha solar) para liderança e reconhecimento, ${venusLines[0]} (linha de Vênus) para amor e relacionamentos, e ${moonLines[0]} (linha lunar) para equilíbrio emocional.`
+      personalizedAnalysis: `Baseado em sua configuração astrológica única - nascido(a) em ${new Date(date).toLocaleDateString('pt-BR')} ${time ? `às ${time}` : ''} em ${place} - seu mapa astrocartográfico revela padrões energéticos específicos. Suas linhas planetárias mais poderosas se concentram em ${sunLines[0]} (linha solar) para liderança e reconhecimento, ${venusLines[0]} (linha de Vênus) para amor e relacionamentos, e ${moonLines[0]} (linha lunar) para equilíbrio emocional.`,
+      currentCityAnalysis
     }
   }
 
@@ -449,11 +488,11 @@ function SuccessPageContent() {
         console.log('✅ Dados encontrados! Gerando relatório...')
         const { personalData } = result.data
         
-        // Gerar relatório místico COMPLETO
+        // Gerar mapa místico COMPLETO
         const numerology = calculateCompleteNumerology(personalData.fullName, personalData.birthDate)
         const astrology = calculateAstrology(personalData.birthDate, personalData.birthTime, personalData.birthPlace)
         const chineseZodiac = getChineseZodiac(personalData.birthDate)
-        const astrocartography = calculateAstrocartography(personalData.fullName, personalData.birthDate, personalData.birthTime, personalData.birthPlace)
+        const astrocartography = calculateAstrocartography(personalData.fullName, personalData.birthDate, personalData.birthTime, personalData.birthPlace, personalData.currentCity)
         
         console.log('📊 Relatório gerado com sucesso!')
         
@@ -518,7 +557,7 @@ function SuccessPageContent() {
       return
     }
 
-    // Para Kirvano, verificamos o status e payment_id
+    // Para Kiwify, verificamos o status e payment_id
     if (status === 'success' || paymentId || sessionId) {
       setPaymentStatus('success')
       
@@ -580,7 +619,7 @@ function SuccessPageContent() {
                 <strong>ID da Transação:</strong> {paymentId || sessionId || 'Processando...'}
               </p>
               <p className="text-xs text-purple-600 dark:text-purple-400 mt-1">
-                Pagamento processado com segurança via Kirvano
+                Pagamento processado com segurança via Kiwify
               </p>
             </div>
           </div>
@@ -747,7 +786,7 @@ function SuccessPageContent() {
               <strong>ID da Transação:</strong> {paymentId || sessionId || 'Processando...'}
             </p>
             <p className="text-xs text-purple-600 dark:text-purple-400 mt-1">
-              Pagamento processado com segurança via Kirvano
+              Pagamento processado com segurança via Kiwify
             </p>
           </div>
 

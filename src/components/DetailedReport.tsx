@@ -1,11 +1,18 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { Calculator, Star, Sparkles, TrendingUp, Calendar, AlertCircle, Target, Award, Heart, Shield, Gem, Lightbulb, Crown, CheckCircle, CreditCard, Lock, Moon, Globe } from 'lucide-react'
+import { useState, useEffect, useRef } from 'react'
+import { useReactToPrint } from 'react-to-print'
+import Image from 'next/image'
+import { Star, Sparkles, TrendingUp, Calendar, AlertCircle, Target, Award, Heart, Shield, Gem, Lightbulb, Crown, CheckCircle, CreditCard, Lock, Moon, Download, FileText } from 'lucide-react'
+import iconNumerologia from '@/app/icon_numerologia.png'
+import iconAstrologia from '@/app/icon_astrologia.png'
+import iconChinese from '@/app/icon_chinese.png'
+import iconCartografia from '@/app/icon_cartografia.png'
 import { getNumberInterpretation } from '@/lib/numerology-interpretations'
 import { getSignInterpretation } from '@/lib/astrology-interpretations'
 import { 
   getPersonalYearMeaning, 
+  getPersonalYearOverview,
   getLifeCycleMeaning, 
   getChallengeMeaning, 
   getHiddenTalentMeaning,
@@ -23,6 +30,7 @@ interface DetailedReportProps {
       birthDate: string
       birthTime?: string
       birthPlace: string
+      currentCity?: string
     }
     numerology: any
     astrology: any
@@ -198,10 +206,10 @@ function HoroscopeInline({ personalData }: { personalData: { fullName: string; e
       birthDate: personalData.birthDate,
       plan: plan
     }))
-    // URLs dos planos configurados no Kirvano
+    // URLs dos planos configurados na Kiwify
     const paymentUrl = plan === 'monthly' 
-      ? 'https://pay.kirvano.com/0a482613-b924-4722-ac74-9b2481e3a167' // Plano mensal R$ 17,00/mês
-      : 'https://pay.kirvano.com/c2105980-0b73-4c27-8aef-7e871b829c9f' // Plano anual R$ 134,00/ano
+      ? 'https://pay.kiwify.com.br/SEU_LINK_MENSAL' // Plano mensal
+      : 'https://pay.kiwify.com.br/SEU_LINK_ANUAL' // Plano anual
     
     window.location.href = paymentUrl
   }
@@ -327,13 +335,10 @@ Análise astrológica para o dia atual
         </div>
       </div>
 
-      {/* Seção de Assinatura */}
+      {/* Seção de Assinatura - Receba Seu Horóscopo Diário (comentado)
       {!isSubscribed && (
         <div className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl p-6 sm:p-8 text-white">
           <div className="text-center mb-6">
-            {/* <div className="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Crown className="w-6 h-6 text-white" />
-            </div> */}
             <h3 className="text-2xl font-bold mb-2">
               Receba Seu Horóscopo Diário
             </h3>
@@ -357,9 +362,7 @@ Análise astrológica para o dia atual
             </div>
           </div>
 
-          {/* Cards de Planos */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-            {/* Plano Mensal */}
             <button
               onClick={() => setSelectedPlan('monthly')}
               className={`bg-white rounded-xl p-6 shadow-lg transition-all duration-300 transform hover:scale-105 ${
@@ -380,7 +383,6 @@ Análise astrológica para o dia atual
               </div>
             </button>
 
-            {/* Plano Anual - RECOMENDADO */}
             <button
               onClick={() => setSelectedPlan('annual')}
               className={`bg-white rounded-xl p-6 shadow-lg transition-all duration-300 transform hover:scale-105 relative ${
@@ -389,7 +391,6 @@ Análise astrológica para o dia atual
                   : 'opacity-90 hover:opacity-100'
               }`}
             >
-              {/* Tag de Desconto */}
               <div className="absolute -top-3 -right-3 bg-gradient-to-r from-yellow-400 to-orange-400 text-white px-4 py-1 rounded-full text-xs font-bold shadow-lg transform rotate-12 animate-pulse">
                 30% OFF
               </div>
@@ -404,9 +405,6 @@ Análise astrológica para o dia atual
                 <div className="text-xs text-green-600 font-semibold mb-2">
                 Economize o equivalente a 4 meses grátis no plano anual
                 </div>
-                {/* <div className="text-xs text-gray-500">
-                Renovação automática anual
-                </div> */}
               </div>
             </button>
           </div>
@@ -431,6 +429,7 @@ Análise astrológica para o dia atual
           </div>
         </div>
       )}
+      */}
     </div>
   )
 }
@@ -454,33 +453,124 @@ export default function DetailedReport({ reportData }: DetailedReportProps) {
   const yearImpact = getYearImpact(chineseZodiac.animal, currentYear.animal)
   const relationshipColor = getRelationshipColor(yearImpact.relationship)
 
+  // Compatibilidades e carreira (com fallbacks para relatórios antigos ou dados sem os campos)
+  const loveCompat = (chineseZodiac.loveCompatibility?.length ? chineseZodiac.loveCompatibility : chineseZodiac.compatibility) || []
+  const careerCompat = (chineseZodiac.careerCompatibility?.length ? chineseZodiac.careerCompatibility : chineseZodiac.compatibility) || []
+  const careerTalentsText = chineseZodiac.careerTalents ?? (Array.isArray(chineseZodiac.careerAdvice) ? chineseZodiac.careerAdvice.join(', ') : '')
+
+  const reportRef = useRef<HTMLDivElement>(null)
+  const basicPdfRef = useRef<HTMLDivElement>(null)
+  const [isPrinting, setIsPrinting] = useState(false)
+  const [isPrintingBasic, setIsPrintingBasic] = useState(false)
+
+  const documentTitle = `relatorio-astroglix-${reportData.personalData.fullName.replace(/\s+/g, '-').toLowerCase()}`
+
+  const handlePrint = useReactToPrint({
+    contentRef: reportRef,
+    documentTitle,
+    onBeforePrint: async () => { setIsPrinting(true) },
+    onAfterPrint: () => setIsPrinting(false),
+    pageStyle: `
+      @page { size: A4; margin: 20mm; }
+      @media print {
+        * { -webkit-print-color-adjust: exact; print-color-adjust: exact; color-adjust: exact; }
+      }
+    `,
+  })
+
+  const handlePrintBasic = useReactToPrint({
+    contentRef: basicPdfRef,
+    documentTitle: `${documentTitle}-dados-basicos`,
+    onBeforePrint: async () => { setIsPrintingBasic(true) },
+    onAfterPrint: () => setIsPrintingBasic(false),
+    pageStyle: `
+      @page { size: A4; margin: 20mm; }
+      @media print {
+        * { -webkit-print-color-adjust: exact; print-color-adjust: exact; color-adjust: exact; }
+      }
+    `,
+  })
+
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 overflow-x-hidden">
+      {/* Barra de ação: Baixar PDF (oculta na impressão via @media print button) */}
+      <div className="sticky top-2 sm:top-4 z-10 flex flex-col sm:flex-row justify-stretch sm:justify-end gap-2 sm:gap-3 px-0">
+        <button
+          type="button"
+          onClick={() => handlePrintBasic()}
+          disabled={isPrintingBasic}
+          aria-label="PDF dados básicos"
+          className="flex items-center justify-center gap-2 bg-gray-600 hover:bg-gray-700 text-white px-4 sm:px-5 py-3 sm:py-2.5 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed min-h-[48px] touch-manipulation opacity-0"
+        >
+          <FileText className="w-5 h-5 shrink-0" />
+          <span className="text-sm sm:text-base">{isPrintingBasic ? 'Preparando...' : 'PDF dados básicos'}</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => handlePrint()}
+          disabled={isPrinting}
+          className="flex items-center justify-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-4 sm:px-5 py-3 sm:py-2.5 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed min-h-[48px] touch-manipulation"
+        >
+          <Download className="w-5 h-5 shrink-0" />
+          <span className="text-sm sm:text-base">{isPrinting ? 'Preparando impressão...' : 'Baixar relatório em PDF'}</span>
+        </button>
+      </div>
+
+      {/* Conteúdo oculto só para PDF de dados básicos (sem explicações) */}
+      <div
+        ref={basicPdfRef}
+        className="absolute left-[-9999px] w-[210mm] bg-white p-8 print:left-0 print:relative print:block"
+        aria-hidden
+      >
+        <h1 className="text-2xl font-bold text-gray-800 mb-6">
+          {reportData.personalData.fullName} — Dados básicos
+        </h1>
+        <ul className="space-y-3 text-lg text-gray-800">
+          <li><strong>Caminho de vida:</strong> {numerology.lifePathNumber}</li>
+          <li><strong>Ano pessoal:</strong> {numerology.personalYear}</li>
+          <li><strong>Sol em:</strong> {sunSignInterp.name}</li>
+          <li><strong>Astrologia chinesa:</strong> {chineseZodiac.animal}</li>
+        </ul>
+      </div>
+
+      <div ref={reportRef} className="space-y-6 sm:space-y-8 max-w-full">
+      {/* Visão geral do ano — debaixo dos botões, antes da numerologia */}
+      <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur rounded-2xl p-5 sm:p-6 border border-purple-200/50 dark:border-purple-700/30 shadow-lg">
+        <p className="text-base sm:text-xl text-gray-800 dark:text-gray-100 text-center font-medium">
+          <span className="text-purple-600 dark:text-purple-400 font-semibold">{new Date().getFullYear()}</span>
+          {' '}será um ano de{' '}
+          <span className="text-pink-600 dark:text-pink-400 font-semibold italic">
+            {getPersonalYearOverview(numerology.personalYear)}
+          </span>
+          {' '}para você.
+        </p>
+      </div>
+
       {/* ========== SEÇÃO 1: NUMEROLOGIA COMPLETA ========== */}
-      <div id="numerologia" className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900 dark:to-pink-900 rounded-3xl p-6 sm:p-10 shadow-2xl scroll-mt-24">
-        <div className="text-center mb-8">
-          <div className="w-20 h-20 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
-            <Calculator className="w-10 h-10 text-white" />
+      <div id="numerologia" className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900 dark:to-pink-900 rounded-3xl p-4 sm:p-6 lg:p-10 shadow-2xl scroll-mt-24">
+        <div className="text-center mb-6 sm:mb-8">
+          <div className="w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center mx-auto mb-4 sm:mb-6 p-2 sm:p-2.5">
+            <Image src={iconNumerologia} alt="Numerologia" className="w-full h-full object-contain" />
           </div>
-          <h2 className="text-4xl font-bold text-gray-800 dark:text-gray-100 mb-3">
+          <h2 className="text-2xl sm:text-4xl font-bold text-gray-800 dark:text-gray-100 mb-2 sm:mb-3">
             1. Numerologia Pessoal Completa
           </h2>
-          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+          <p className="text-sm sm:text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
             Seus números sagrados revelam o mapa completo de sua alma e missão nesta vida
           </p>
         </div>
 
         {/* NÚMERO DO CAMINHO DA VIDA */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-xl mb-8">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="w-16 h-16 bg-gradient-to-r from-red-500 to-pink-500 rounded-full flex items-center justify-center">
-              <span className="text-3xl font-bold text-white">{numerology.lifePathNumber}</span>
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 sm:p-6 lg:p-8 shadow-xl mb-6 sm:mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
+            <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-r from-red-500 to-pink-500 rounded-full flex items-center justify-center shrink-0">
+              <span className="text-2xl sm:text-3xl font-bold text-white">{numerology.lifePathNumber}</span>
             </div>
-            <div>
-              <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100">
+            <div className="min-w-0">
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-gray-100">
                 Caminho da Vida: {lifePathInterp.name}
               </h3>
-              <p className="text-gray-600 dark:text-gray-400">Sua missão principal nesta encarnação</p>
+              <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">Sua missão principal nesta encarnação</p>
             </div>
           </div>
 
@@ -659,7 +749,7 @@ Orientações
                   <span className="text-3xl font-bold text-purple-600 dark:text-purple-400">{numerology.lifeCycles.first}</span>
                 </div>
                 <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
-                  {getLifeCycleMeaning(numerology.lifeCycles.first)}
+                  {getLifeCycleMeaning(numerology.lifeCycles.first, 1)}
                 </p>
               </div>
               <div className="bg-pink-50 dark:bg-pink-900/30 rounded-lg p-4 border-l-4 border-pink-500">
@@ -668,7 +758,7 @@ Orientações
                   <span className="text-3xl font-bold text-pink-600 dark:text-pink-400">{numerology.lifeCycles.second}</span>
                 </div>
                 <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
-                  {getLifeCycleMeaning(numerology.lifeCycles.second)}
+                  {getLifeCycleMeaning(numerology.lifeCycles.second, 2)}
                 </p>
               </div>
               <div className="bg-indigo-50 dark:bg-indigo-900/30 rounded-lg p-4 border-l-4 border-indigo-500">
@@ -677,7 +767,7 @@ Orientações
                   <span className="text-3xl font-bold text-indigo-600 dark:text-indigo-400">{numerology.lifeCycles.third}</span>
                 </div>
                 <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
-                  {getLifeCycleMeaning(numerology.lifeCycles.third)}
+                  {getLifeCycleMeaning(numerology.lifeCycles.third, 3)}
                 </p>
               </div>
             </div>
@@ -733,18 +823,54 @@ Orientações
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
               Números ausentes ou raros em seu nome revelam potenciais a serem desenvolvidos:
             </p>
-            <div className="space-y-3">
-              {numerology.hiddenTalents?.map((talent: number, idx: number) => (
-                <div key={idx} className="bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/30 dark:to-orange-900/30 rounded-lg p-4 border-l-4 border-yellow-500">
-                  <div className="flex items-center gap-3 mb-2">
-                    <span className="text-3xl font-bold text-yellow-600 dark:text-yellow-400">{talent}</span>
-                    <span className="text-sm font-semibold text-yellow-700 dark:text-yellow-300">Talento Oculto</span>
+            <div className="space-y-3 mb-6">
+              {numerology.hiddenTalents?.length ? (
+                numerology.hiddenTalents.map((talent: number, idx: number) => (
+                  <div key={idx} className="bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/30 dark:to-orange-900/30 rounded-lg p-4 border-l-4 border-yellow-500">
+                    <div className="flex items-center gap-3 mb-2">
+                      <span className="text-3xl font-bold text-yellow-600 dark:text-yellow-400">{talent}</span>
+                      <span className="text-sm font-semibold text-yellow-700 dark:text-yellow-300">Talento Oculto</span>
+                    </div>
+                    <p className="text-sm text-gray-700 dark:text-gray-300">
+                      {getHiddenTalentMeaning(talent)}
+                    </p>
                   </div>
-                  <p className="text-sm text-gray-700 dark:text-gray-300">
-                    {getHiddenTalentMeaning(talent)}
+                ))
+              ) : (
+                <p className="text-sm text-gray-600 dark:text-gray-400 italic py-2">
+                  Seu nome apresenta boa variedade numerológica. Todos os números de 1 a 9 estão representados — continue a desenvolver todos os seus potenciais.
+                </p>
+              )}
+            </div>
+
+            {/* Energia negativa do nome */}
+            <div className="pt-4 border-t border-gray-200 dark:border-gray-600">
+              <h5 className="flex items-center gap-2 text-base font-bold text-gray-700 dark:text-gray-200 mb-3">
+                <AlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+                Energia negativa do nome
+              </h5>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                Números ausentes ou em desequilíbrio no nome podem gerar bloqueios e lições a superar:
+              </p>
+              <div className="space-y-2">
+                {numerology.karmicLessons?.length ? (
+                  numerology.karmicLessons.map((num: number, idx: number) => (
+                    <div key={idx} className="bg-amber-50 dark:bg-amber-900/20 rounded-lg p-3 border-l-4 border-amber-500">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-xl font-bold text-amber-700 dark:text-amber-400">{num}</span>
+                        <span className="text-xs font-semibold text-amber-800 dark:text-amber-300">Lição cármica</span>
+                      </div>
+                      <p className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed">
+                        {getChallengeMeaning(num)}
+                      </p>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-sm text-gray-500 dark:text-gray-400 italic py-1">
+                    Seu nome tem boa distribuição numerológica; foque em equilibrar as energias dos talentos ocultos acima.
                   </p>
-                </div>
-              ))}
+                )}
+              </div>
             </div>
           </div>
 
@@ -794,8 +920,8 @@ Orientações
       {/* ========== SEÇÃO 2: ASTROLOGIA OCIDENTAL ========== */}
       <div id="astrologia" className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900 dark:to-indigo-900 rounded-3xl p-6 sm:p-10 shadow-2xl scroll-mt-24">
         <div className="text-center mb-8">
-          <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
-            <Star className="w-10 h-10 text-white" />
+          <div className="w-20 h-20 flex items-center justify-center mx-auto mb-6 p-2.5">
+            <Image src={iconAstrologia} alt="Astrologia" className="w-full h-full object-contain" />
           </div>
           <h2 className="text-4xl font-bold text-gray-800 dark:text-gray-100 mb-3">
             2. Astrologia Ocidental Completa
@@ -950,8 +1076,8 @@ Orientações
       {/* ========== SEÇÃO 3: ASTROLOGIA CHINESA ========== */}
       <div id="zodiaco-chines" className="bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-900 dark:to-orange-900 rounded-3xl p-6 sm:p-10 shadow-2xl scroll-mt-24">
         <div className="text-center mb-8">
-          <div className="w-20 h-20 bg-gradient-to-r from-red-500 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg text-4xl">
-            <span className="text-2xl font-bold text-red-600">龍</span>
+          <div className="w-20 h-20 flex items-center justify-center mx-auto mb-6 p-2.5">
+            <Image src={iconChinese} alt="Zodíaco Chinês" className="w-full h-full object-contain" />
           </div>
           <h2 className="text-4xl font-bold text-gray-800 dark:text-gray-100 mb-3">
             3. Astrologia Chinesa
@@ -975,7 +1101,7 @@ Orientações
           <div className="grid md:grid-cols-2 gap-6 mb-6">
             <div className="bg-red-50 dark:bg-red-900/30 rounded-xl p-5">
               <h4 className="font-bold text-red-700 dark:text-red-300 mb-3">Forças e Talentos</h4>
-              <p className="text-gray-700 dark:text-gray-300 text-sm mb-3">{chineseZodiac.strengths}</p>
+              <p className="text-gray-700 dark:text-gray-300 text-sm mb-3">{Array.isArray(chineseZodiac.strengths) ? chineseZodiac.strengths.join(', ') : chineseZodiac.strengths}</p>
               <div className="flex flex-wrap gap-2">
                 {chineseZodiac.traits?.map((trait: string, idx: number) => (
                   <span key={idx} className="bg-red-100 dark:bg-red-800 text-red-800 dark:text-red-200 px-3 py-1 rounded-full text-xs font-semibold">
@@ -989,35 +1115,37 @@ Orientações
               <h4 className="font-bold text-orange-700 dark:text-orange-300 mb-3">Desafios</h4>
               <p className="text-gray-700 dark:text-gray-300 text-sm mb-3">{chineseZodiac.weaknesses}</p>
               <p className="text-gray-700 dark:text-gray-300 text-sm font-semibold">Orientações:</p>
-              <p className="text-gray-600 dark:text-gray-400 text-xs">{chineseZodiac.challenges}</p>
+              <p className="text-gray-600 dark:text-gray-400 text-xs">{Array.isArray(chineseZodiac.challenges) ? chineseZodiac.challenges.join(', ') : chineseZodiac.challenges}</p>
             </div>
           </div>
 
           <div className="grid md:grid-cols-3 gap-4 mb-6">
             <div className="bg-yellow-50 dark:bg-yellow-900/30 rounded-xl p-4 text-center">
               <p className="font-bold text-yellow-700 dark:text-yellow-300 mb-2">💼 Carreira Ideal</p>
-              <p className="text-sm text-gray-700 dark:text-gray-300">{chineseZodiac.careerTalents}</p>
+              <p className="text-sm text-gray-700 dark:text-gray-300">{careerTalentsText || '—'}</p>
             </div>
 
             <div className="bg-pink-50 dark:bg-pink-900/30 rounded-xl p-4 text-center">
               <p className="font-bold text-pink-700 dark:text-pink-300 mb-2">❤️ Compatibilidade Amorosa</p>
-              <div className="flex justify-center gap-2 mt-2">
-                {chineseZodiac.loveCompatibility?.map((animal: string, idx: number) => (
+              <div className="flex flex-wrap justify-center gap-2 mt-2">
+                {loveCompat.map((animal: string, idx: number) => (
                   <span key={idx} className="bg-pink-200 dark:bg-pink-800 text-pink-800 dark:text-pink-200 px-3 py-1 rounded-full text-sm font-semibold">
                     {animal}
                   </span>
                 ))}
+                {loveCompat.length === 0 && <span className="text-gray-500 dark:text-gray-400 text-sm">—</span>}
               </div>
             </div>
 
             <div className="bg-blue-50 dark:bg-blue-900/30 rounded-xl p-4 text-center">
               <p className="font-bold text-blue-700 dark:text-blue-300 mb-2">🤝 Compatibilidade Profissional</p>
-              <div className="flex justify-center gap-2 mt-2">
-                {chineseZodiac.careerCompatibility?.map((animal: string, idx: number) => (
+              <div className="flex flex-wrap justify-center gap-2 mt-2">
+                {careerCompat.map((animal: string, idx: number) => (
                   <span key={idx} className="bg-blue-200 dark:bg-blue-800 text-blue-800 dark:text-blue-200 px-3 py-1 rounded-full text-sm font-semibold">
                     {animal}
                   </span>
                 ))}
+                {careerCompat.length === 0 && <span className="text-gray-500 dark:text-gray-400 text-sm">—</span>}
               </div>
             </div>
           </div>
@@ -1095,8 +1223,8 @@ Orientações
       {/* ========== SEÇÃO 4: ASTROCARTOGRAFIA ========== */}
       <div id="astrocartografia" className="bg-gradient-to-br from-green-50 to-teal-50 dark:from-green-900 dark:to-teal-900 rounded-3xl p-6 sm:p-10 shadow-2xl scroll-mt-24">
         <div className="text-center mb-8">
-          <div className="w-20 h-20 bg-gradient-to-r from-green-500 to-teal-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg text-4xl">
-            <Globe className="w-10 h-10 text-green-500" />
+          <div className="w-20 h-20 flex items-center justify-center mx-auto mb-6 p-2.5">
+            <Image src={iconCartografia} alt="Astrocartografia" className="w-full h-full object-contain" />
           </div>
           <h2 className="text-4xl font-bold text-gray-800 dark:text-gray-100 mb-3">
             4. Astrocartografia
@@ -1106,18 +1234,60 @@ Orientações
           </p>
         </div>
 
+        {/* Cidade de residência atual — benefícios e pontos de atenção */}
+        {astrocartography.currentCityAnalysis && (
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-xl mb-6 border-2 border-teal-200/50 dark:border-teal-700/30">
+            <h4 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-2">
+              🏠 Cidade de residência atual: {astrocartography.currentCityAnalysis.city}
+            </h4>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
+              Leitura astrocartográfica para o seu dia a dia neste local
+            </p>
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="bg-teal-50 dark:bg-teal-900/30 rounded-xl p-5">
+                <h5 className="font-bold text-teal-700 dark:text-teal-300 mb-3 flex items-center gap-2">
+                  <CheckCircle className="w-5 h-5" />
+                  Benefícios
+                </h5>
+                <ul className="space-y-2">
+                  {astrocartography.currentCityAnalysis.benefits.map((item: string, idx: number) => (
+                    <li key={idx} className="text-gray-700 dark:text-gray-300 text-sm flex items-start gap-2">
+                      <span className="text-teal-500 mt-0.5">•</span>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="bg-amber-50 dark:bg-amber-900/30 rounded-xl p-5">
+                <h5 className="font-bold text-amber-700 dark:text-amber-300 mb-3 flex items-center gap-2">
+                  <AlertCircle className="w-5 h-5" />
+                  Pontos de atenção
+                </h5>
+                <ul className="space-y-2">
+                  {astrocartography.currentCityAnalysis.pointsOfAttention.map((item: string, idx: number) => (
+                    <li key={idx} className="text-gray-700 dark:text-gray-300 text-sm flex items-start gap-2">
+                      <span className="text-amber-500 mt-0.5">•</span>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Análise Personalizada */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-xl mb-6">
           <h4 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-4">📍 Sua Análise Personalizada</h4>
           <p className="text-gray-700 dark:text-gray-300 leading-relaxed">{astrocartography.personalizedAnalysis}</p>
         </div>
 
-        {/* MAPA INTERATIVO */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-xl mb-6">
-          <h4 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-4 flex items-center gap-2">
+        {/* MAPA INTERATIVO - oculto na impressão/PDF via .no-print */}
+        <div className="no-print bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-xl mb-6">
+          <h4 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-gray-100 mb-3 sm:mb-4 flex items-center gap-2">
             🗺️ Seu Mapa Astrocartográfico Interativo
           </h4>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 sm:mb-6">
             Visualize onde no mundo suas energias planetárias são mais fortes. Clique nos marcadores para ver detalhes!
           </p>
           <AstroMap
@@ -1241,6 +1411,7 @@ Orientações
       <div id="horoscope-section" className="bg-gradient-to-r from-yellow-50 to-amber-50 dark:from-yellow-900/30 dark:to-amber-900/30 rounded-2xl p-6 sm:p-8">
         {/* Import do componente de horóscopo inline */}
         <HoroscopeInline personalData={reportData.personalData} />
+      </div>
       </div>
     </div>
   )

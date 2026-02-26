@@ -1,0 +1,17 @@
+{
+  "paymentId": "kirvano_1770761888733_tqdnsqu82",
+  "customerData": {
+    "name": "Camila",
+    "email": "teste@teste.com"
+  },
+  "personalData": {
+    "fullName": "Camila",
+    "email": "teste@teste.com",
+    "birthDate": "1991-05-28",
+    "birthTime": "",
+    "birthPlace": "São paulo"
+  },
+  "timestamp": "2026-02-10T22:18:08.733Z",
+  "planType": "relatorio-mistico-completo",
+  "amount": 80
+}

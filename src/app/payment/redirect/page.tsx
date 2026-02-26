@@ -70,7 +70,7 @@ function PaymentRedirectContent() {
         
         <div className="bg-purple-50 dark:bg-purple-900 rounded-xl p-4 mb-6">
           <p className="text-sm text-purple-700 dark:text-purple-300">
-            <strong>Status:</strong> Pagamento processado com sucesso via Kirvano
+            <strong>Status:</strong> Pagamento processado com sucesso via Kiwify
           </p>
           <p className="text-xs text-purple-600 dark:text-purple-400 mt-1">
             Aguarde enquanto preparamos seu relatório místico completo

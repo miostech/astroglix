@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
       try {
         const fs = require('fs')
         const tmpDir = join(process.cwd(), 'tmp')
-        const files = fs.readdirSync(tmpDir).filter((file: string) => file.endsWith('.json') && file.startsWith('kirvano_'))
+        const files = fs.readdirSync(tmpDir).filter((file: string) => file.endsWith('.json') && (file.startsWith('kirvano_') || file.startsWith('kiwify_')))
         
         if (files.length === 0) {
           throw new Error('Nenhum arquivo encontrado')

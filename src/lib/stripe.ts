@@ -1,28 +1,33 @@
-// Configuração da Kirvano
-export const KIRVANO_CONFIG = {
-  checkoutUrl: 'https://pay.kirvano.com/d7908b12-5e92-44b7-bffc-9e3433b7ff9d',
+// Configuração da Kiwify (pagamentos)
+export const KIWIFY_CONFIG = {
+  checkoutUrl: 'https://pay.kiwify.com.br/SEU_LINK_AQUI', // Substitua pelo link do seu produto na Kiwify
   currency: 'BRL',
   country: 'BR',
   productName: 'Relatório Místico Completo',
   productDescription: 'Numerologia, Astrologia, Zodíaco Chinês e Astrocartografia',
-  price: 80.00
+  price: 28.0
 }
 
-// Função para criar URL de pagamento personalizada com dados do cliente
-export const createKirvanoPaymentUrl = (
-  customerData: { name: string; email: string; cpf?: string }, 
+// Compatibilidade: manter KIRVANO_CONFIG apontando para Kiwify (evitar quebrar imports antigos)
+export const KIRVANO_CONFIG = KIWIFY_CONFIG
+
+/** Cria URL de checkout Kiwify com dados do cliente e URLs de retorno */
+export const createKiwifyPaymentUrl = (
+  customerData: { name: string; email: string; cpf?: string },
   baseUrl?: string,
   successUrl?: string,
   cancelUrl?: string
 ) => {
-  const checkoutUrl = baseUrl || KIRVANO_CONFIG.checkoutUrl
+  const checkoutUrl = baseUrl || KIWIFY_CONFIG.checkoutUrl
   const params = new URLSearchParams({
-    customer_name: customerData.name,
-    customer_email: customerData.email,
-    ...(customerData.cpf && { customer_cpf: customerData.cpf }),
+    name: customerData.name,
+    email: customerData.email,
+    ...(customerData.cpf && { cpf: customerData.cpf }),
     ...(successUrl && { success_url: successUrl }),
     ...(cancelUrl && { cancel_url: cancelUrl })
   })
-  
   return `${checkoutUrl}?${params.toString()}`
 }
+
+/** @deprecated Use createKiwifyPaymentUrl */
+export const createKirvanoPaymentUrl = createKiwifyPaymentUrl

@@ -33,7 +33,7 @@ export default function HoroscopeSuccessPage() {
 
   const activateHoroscopeSubscription = async (customerData: any) => {
     try {
-      // Em produção, isso seria feito automaticamente pelo webhook da Kirvano
+      // Em produção, isso seria feito automaticamente pelo webhook da Kiwify
       // Por enquanto, simular ativação
       await fetch('/api/check-horoscope-subscription', {
         method: 'POST',

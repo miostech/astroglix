@@ -67,8 +67,8 @@ const MapComponent = dynamic(
 
       if (!isClient) {
         return (
-          <div className="w-full h-[500px] bg-gray-200 dark:bg-gray-700 rounded-xl flex items-center justify-center">
-            <p className="text-gray-600 dark:text-gray-400">Carregando mapa...</p>
+          <div className="w-full h-full min-h-[240px] sm:min-h-[360px] md:min-h-[420px] bg-gray-200 dark:bg-gray-700 rounded-xl flex items-center justify-center">
+            <p className="text-gray-600 dark:text-gray-400 text-sm">Carregando mapa...</p>
           </div>
         )
       }
@@ -123,7 +123,7 @@ const MapComponent = dynamic(
         <MapContainer
           center={[20, 0]}
           zoom={2}
-          style={{ height: '500px', width: '100%', borderRadius: '12px' }}
+          style={{ height: '100%', minHeight: '240px', width: '100%', borderRadius: '12px' }}
           className="z-0"
         >
           <TileLayer
@@ -257,14 +257,16 @@ const MapComponent = dynamic(
 export default function AstroMap(props: AstroMapProps) {
   return (
     <div className="w-full">
-      <MapComponent {...props} />
-      
+      <div className="w-full h-[280px] sm:h-[380px] md:h-[480px] rounded-xl overflow-hidden">
+        <MapComponent {...props} />
+      </div>
+
       {/* Legenda com Explicações */}
       <div className="mt-4 space-y-4">
-        <div className="bg-white dark:bg-gray-800 rounded-xl p-5 shadow-lg">
-          <h4 className="font-bold text-gray-800 dark:text-gray-100 mb-4 text-center">🎨 Guia de Interpretação das Linhas Planetárias</h4>
-          
-          <div className="grid md:grid-cols-3 gap-4 mb-4">
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-4 sm:p-5 shadow-lg">
+          <h4 className="font-bold text-gray-800 dark:text-gray-100 mb-3 sm:mb-4 text-center text-sm sm:text-base">🎨 Guia de Interpretação das Linhas Planetárias</h4>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 mb-4">
             {/* Linha Solar */}
             <div className="bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-900/30 dark:to-orange-900/30 rounded-lg p-4 border-l-4 border-yellow-500">
               <div className="flex items-center gap-2 mb-2">
