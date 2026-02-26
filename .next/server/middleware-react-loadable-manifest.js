@@ -1,1 +1,0 @@
-self.__REACT_LOADABLE_MANIFEST='{"components/AstroMap.tsx -> react-leaflet":{"id":9712,"files":["static/chunks/331.a2c6c1a49d96f84c.js"]}}';
