@@ -6337,10 +6337,10 @@ if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelper
     __turbopack_context__.k.registerExports(module, globalThis.$RefreshHelpers$);
 }
 }}),
-"[project]/src/app/logo_astroglix.png (static in ecmascript)": ((__turbopack_context__) => {
+"[project]/src/app/logo_astroglix2.png (static in ecmascript)": ((__turbopack_context__) => {
 
-__turbopack_context__.v("/_next/static/media/logo_astroglix.d4c50cef.png");}),
-"[project]/src/app/logo_astroglix.png.mjs { IMAGE => \"[project]/src/app/logo_astroglix.png (static in ecmascript)\" } [app-client] (structured image object, ecmascript)": ((__turbopack_context__) => {
+__turbopack_context__.v("/_next/static/media/logo_astroglix2.0be77fe8.png");}),
+"[project]/src/app/logo_astroglix2.png.mjs { IMAGE => \"[project]/src/app/logo_astroglix2.png (static in ecmascript)\" } [app-client] (structured image object, ecmascript)": ((__turbopack_context__) => {
 "use strict";
 
 var { k: __turbopack_refresh__, m: module } = __turbopack_context__;
@@ -6348,15 +6348,15 @@ var { k: __turbopack_refresh__, m: module } = __turbopack_context__;
 __turbopack_context__.s({
     "default": ()=>__TURBOPACK__default__export__
 });
-var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$app$2f$logo_astroglix$2e$png__$28$static__in__ecmascript$29$__ = __turbopack_context__.i("[project]/src/app/logo_astroglix.png (static in ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$app$2f$logo_astroglix2$2e$png__$28$static__in__ecmascript$29$__ = __turbopack_context__.i("[project]/src/app/logo_astroglix2.png (static in ecmascript)");
 ;
 const __TURBOPACK__default__export__ = {
-    src: __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$app$2f$logo_astroglix$2e$png__$28$static__in__ecmascript$29$__["default"],
-    width: 1536,
-    height: 1024,
+    src: __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$app$2f$logo_astroglix2$2e$png__$28$static__in__ecmascript$29$__["default"],
+    width: 612,
+    height: 408,
     blurWidth: 8,
     blurHeight: 5,
-    blurDataURL: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAFCAIAAAD38zoCAAAAPUlEQVR42nWLUQoAIAhDu/85qxtUmE6aEPVTY8iT8ZJ/kuIAGAMirkrguwe0pqXOnFkCer+Gm7EhkY/xzALBW3XJWgcNKQAAAABJRU5ErkJggg=="
+    blurDataURL: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAFCAYAAAB4ka1VAAAAXklEQVR42o3NsQqAIBSF4dRbt8IsUzGIXiSHQhxqrCXo/R8kW5z9x8MHpyhyojErpVJC9C1ibQc5srglsBgzXasLr/fns+3H7VyYtTYJ/LoCgAYRJeddyQAoITTr/gMzmwad2/5fwAAAAABJRU5ErkJggg=="
 };
 if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
     __turbopack_context__.k.registerExports(module, globalThis.$RefreshHelpers$);
@@ -6391,7 +6391,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$re
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$down$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronDown$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/chevron-down.js [app-client] (ecmascript) <export default as ChevronDown>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$up$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronUp$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/chevron-up.js [app-client] (ecmascript) <export default as ChevronUp>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$DetailedReport$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/components/DetailedReport.tsx [app-client] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$app$2f$logo_astroglix$2e$png$2e$mjs__$7b$__IMAGE__$3d3e$__$225b$project$5d2f$src$2f$app$2f$logo_astroglix$2e$png__$28$static__in__ecmascript$2922$__$7d$__$5b$app$2d$client$5d$__$28$structured__image__object$2c$__ecmascript$29$__ = __turbopack_context__.i('[project]/src/app/logo_astroglix.png.mjs { IMAGE => "[project]/src/app/logo_astroglix.png (static in ecmascript)" } [app-client] (structured image object, ecmascript)');
+var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$app$2f$logo_astroglix2$2e$png$2e$mjs__$7b$__IMAGE__$3d3e$__$225b$project$5d2f$src$2f$app$2f$logo_astroglix2$2e$png__$28$static__in__ecmascript$2922$__$7d$__$5b$app$2d$client$5d$__$28$structured__image__object$2c$__ecmascript$29$__ = __turbopack_context__.i('[project]/src/app/logo_astroglix2.png.mjs { IMAGE => "[project]/src/app/logo_astroglix2.png (static in ecmascript)" } [app-client] (structured image object, ecmascript)');
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$app$2f$icon_numerologia$2e$png$2e$mjs__$7b$__IMAGE__$3d3e$__$225b$project$5d2f$src$2f$app$2f$icon_numerologia$2e$png__$28$static__in__ecmascript$2922$__$7d$__$5b$app$2d$client$5d$__$28$structured__image__object$2c$__ecmascript$29$__ = __turbopack_context__.i('[project]/src/app/icon_numerologia.png.mjs { IMAGE => "[project]/src/app/icon_numerologia.png (static in ecmascript)" } [app-client] (structured image object, ecmascript)');
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$app$2f$icon_astrologia$2e$png$2e$mjs__$7b$__IMAGE__$3d3e$__$225b$project$5d2f$src$2f$app$2f$icon_astrologia$2e$png__$28$static__in__ecmascript$2922$__$7d$__$5b$app$2d$client$5d$__$28$structured__image__object$2c$__ecmascript$29$__ = __turbopack_context__.i('[project]/src/app/icon_astrologia.png.mjs { IMAGE => "[project]/src/app/icon_astrologia.png (static in ecmascript)" } [app-client] (structured image object, ecmascript)');
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$app$2f$icon_chinese$2e$png$2e$mjs__$7b$__IMAGE__$3d3e$__$225b$project$5d2f$src$2f$app$2f$icon_chinese$2e$png__$28$static__in__ecmascript$2922$__$7d$__$5b$app$2d$client$5d$__$28$structured__image__object$2c$__ecmascript$29$__ = __turbopack_context__.i('[project]/src/app/icon_chinese.png.mjs { IMAGE => "[project]/src/app/icon_chinese.png (static in ecmascript)" } [app-client] (structured image object, ecmascript)');
@@ -9633,7 +9633,7 @@ function MysticReportApp() {
                                         className: "shrink-0 flex items-end -mb-10 sm:-mb-12 -ml-0.5 sm:-ml-1",
                                         "aria-label": "Astroglix - início",
                                         children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$image$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
-                                            src: __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$app$2f$logo_astroglix$2e$png$2e$mjs__$7b$__IMAGE__$3d3e$__$225b$project$5d2f$src$2f$app$2f$logo_astroglix$2e$png__$28$static__in__ecmascript$2922$__$7d$__$5b$app$2d$client$5d$__$28$structured__image__object$2c$__ecmascript$29$__["default"],
+                                            src: __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$app$2f$logo_astroglix2$2e$png$2e$mjs__$7b$__IMAGE__$3d3e$__$225b$project$5d2f$src$2f$app$2f$logo_astroglix2$2e$png__$28$static__in__ecmascript$2922$__$7d$__$5b$app$2d$client$5d$__$28$structured__image__object$2c$__ecmascript$29$__["default"],
                                             alt: "Astroglix",
                                             className: "h-28 sm:h-32 w-auto object-contain object-left-bottom"
                                         }, void 0, false, {
@@ -10573,7 +10573,7 @@ function MysticReportApp() {
                                         className: "min-w-0",
                                         children: [
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$image$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
-                                                src: __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$app$2f$logo_astroglix$2e$png$2e$mjs__$7b$__IMAGE__$3d3e$__$225b$project$5d2f$src$2f$app$2f$logo_astroglix$2e$png__$28$static__in__ecmascript$2922$__$7d$__$5b$app$2d$client$5d$__$28$structured__image__object$2c$__ecmascript$29$__["default"],
+                                                src: __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$app$2f$logo_astroglix2$2e$png$2e$mjs__$7b$__IMAGE__$3d3e$__$225b$project$5d2f$src$2f$app$2f$logo_astroglix2$2e$png__$28$static__in__ecmascript$2922$__$7d$__$5b$app$2d$client$5d$__$28$structured__image__object$2c$__ecmascript$29$__["default"],
                                                 alt: "Astroglix",
                                                 className: "h-28 sm:h-32 w-auto object-contain mb-3"
                                             }, void 0, false, {
@@ -10798,4 +10798,4 @@ if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelper
 }}),
 }]);
 
-//# sourceMappingURL=src_4a8a4209._.js.map
+//# sourceMappingURL=src_a0d5a5f9._.js.map

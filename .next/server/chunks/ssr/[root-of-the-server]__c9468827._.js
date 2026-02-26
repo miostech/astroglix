@@ -6951,7 +6951,7 @@ const inspirationalQuotes = [
 const FAQ_ITEMS = [
     {
         pergunta: 'Isso é adivinhação?',
-        resposta: 'Não. O Astroglix trabalha com leitura simbólica e estratégica, com base em cálculos e interpretação estruturada. O foco é clareza, padrões e decisões melhores — não promessas.'
+        resposta: 'Não. O Astroglix trabalha com Leitura estratégica , com base em cálculos e interpretação estruturada. O foco é clareza, padrões e decisões melhores — não promessas.'
     },
     {
         pergunta: 'Mapa natal e mapa astral são diferentes?',
@@ -9172,13 +9172,13 @@ function MysticReportApp() {
                 currentStep === 1 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Fragment"], {
                     children: [
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("header", {
-                            className: "sticky top-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md rounded-b-2xl border-b border-x border-gray-200/50 dark:border-gray-700/50 mx-2 sm:mx-6 mt-2 sm:mt-3 overflow-visible pb-20 sm:pb-24",
+                            className: "sticky top-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md rounded-b-2xl border-b border-x border-gray-200/50 dark:border-gray-700/50 mx-2 sm:mx-6 mt-2 sm:mt-3 overflow-visible",
                             children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                className: "max-w-5xl mx-auto px-3 sm:px-6 py-2 sm:py-3 flex items-end justify-between gap-2 min-h-[48px] sm:min-h-[52px] overflow-visible",
+                                className: "max-w-5xl mx-auto pl-2 pr-2 sm:pl-3 sm:pr-4 py-1 sm:py-2 flex items-end justify-between gap-2 min-h-0 overflow-visible",
                                 children: [
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
                                         href: "/",
-                                        className: "shrink-0 flex items-end -mb-16 sm:-mb-20",
+                                        className: "shrink-0 flex items-end -mb-10 sm:-mb-12 -ml-0.5 sm:-ml-1",
                                         "aria-label": "Astroglix - início",
                                         children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$image$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
                                             src: __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$app$2f$logo_astroglix$2e$png$2e$mjs__$7b$__IMAGE__$3d3e$__$225b$project$5d2f$src$2f$app$2f$logo_astroglix$2e$png__$28$static__in__ecmascript$2922$__$7d$__$5b$app$2d$ssr$5d$__$28$structured__image__object$2c$__ecmascript$29$__["default"],
@@ -9234,7 +9234,7 @@ function MysticReportApp() {
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("section", {
-                            className: "max-w-4xl mx-auto px-3 sm:px-4 py-8 sm:py-16 text-center",
+                            className: "max-w-4xl mx-auto px-3 sm:px-4 pt-14 sm:pt-16 pb-8 sm:pb-16 text-center",
                             children: [
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
                                     className: "text-2xl sm:text-3xl md:text-[36px] leading-tight sm:leading-[40px] font-bold mb-4 sm:mb-6 bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400 bg-clip-text text-transparent",
@@ -10123,7 +10123,7 @@ function MysticReportApp() {
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                                 className: "text-[14px] sm:text-[16px] leading-[22px] sm:leading-[24px] text-gray-600 dark:text-gray-400",
-                                                children: "Leitura simbólica e estratégica integrando numerologia, astrologia e sistemas orientais."
+                                                children: "Leitura estratégica  integrando numerologia, astrologia e sistemas orientais."
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/page.tsx",
                                                 lineNumber: 1845,

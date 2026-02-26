@@ -23,7 +23,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "Astroglix — Leitura simbólica e estratégica",
+  title: "Astroglix — Leitura estratégica ",
   description: "Numerologia, Astrologia Ocidental, Tradição Oriental e Astrocartografia. Seu mapa revela o manual de instruções da sua vida. Não é previsão. É direção.",
 };
 

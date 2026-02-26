@@ -7,7 +7,6 @@ import { Country, State, City } from 'country-state-city'
 import { Calendar, Star, Calculator, Sparkles, Heart, Zap, Eye, Crown, CreditCard, Lock, CheckCircle, Moon, Sun, MapPin, Compass, BookOpen, Target, TrendingUp, Users, Brain, Shield, Award, Gem, Clock, Lightbulb, AlertCircle, ChevronDown, ChevronUp } from 'lucide-react'
 import { KIWIFY_CONFIG } from '@/lib/stripe'
 import DetailedReport from '@/components/DetailedReport'
-import logoAstroglix from '@/app/logo_astroglix.png'
 import iconNumerologia from '@/app/icon_numerologia.png'
 import iconAstrologia from '@/app/icon_astrologia.png'
 import iconChinese from '@/app/icon_chinese.png'
@@ -403,7 +402,7 @@ const inspirationalQuotes = [
 ]
 
 const FAQ_ITEMS: { pergunta: string; resposta: string }[] = [
-  { pergunta: 'Isso é adivinhação?', resposta: 'Não. O Astroglix trabalha com leitura simbólica e estratégica, com base em cálculos e interpretação estruturada. O foco é clareza, padrões e decisões melhores — não promessas.' },
+  { pergunta: 'Isso é adivinhação?', resposta: 'Não. O Astroglix trabalha com Leitura estratégica , com base em cálculos e interpretação estruturada. O foco é clareza, padrões e decisões melhores — não promessas.' },
   { pergunta: 'Mapa natal e mapa astral são diferentes?', resposta: 'Na prática, são sinônimos. Ambos se referem ao mapa do céu no seu nascimento. Aqui a diferença é a qualidade da interpretação e a estrutura do relatório.' },
   { pergunta: 'Preciso saber a hora de nascimento?', resposta: 'Para a Análise Completa: a hora melhora muito (Ascendente e casas dependem da hora). Se não souber, entregamos uma versão essencial.' },
   { pergunta: 'Em quanto tempo eu recebo?', resposta: 'Análise Completa: acesso imediato após o pagamento. O relatório fica disponível na tela para visualizar e baixar quando quiser.' },
@@ -1156,8 +1155,8 @@ export default function MysticReportApp() {
       <div className="bg-white dark:bg-gray-800 rounded-3xl p-4 sm:p-8 shadow-xl border border-gray-100/80 dark:border-gray-700/80 relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 via-pink-500 to-purple-500 animate-shimmer rounded-t-3xl"></div>
         <div className="text-center mb-6 sm:mb-8">
-          <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-[0_0_20px_rgba(236,72,153,0.4)] animate-pulse-glow">
-            <Star className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
+          <div className="flex justify-center mb-4">
+            <Image src="/logo_astroglix2.png" alt="Astroglix" width={240} height={96} className="h-20 sm:h-24 w-auto object-contain" />
           </div>
           <h2 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-gray-200 mb-2">
             Informações Necessárias para Análise
@@ -1303,7 +1302,7 @@ export default function MysticReportApp() {
                   disabled={!birthCountryCode}
                   className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-2xl focus:ring-2 focus:ring-purple-400/50 focus:border-purple-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <option value="">{states.length ? 'Selecione o estado' : '—'}</option>
+                  <option value="">{states.length ? 'Estado' : '—'}</option>
                   {states.map((s) => (
                     <option key={s.isoCode} value={s.isoCode}>{s.name}</option>
                   ))}
@@ -1321,7 +1320,7 @@ export default function MysticReportApp() {
                   disabled={!birthCountryCode || cities.length === 0}
                   className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-2xl focus:ring-2 focus:ring-purple-400/50 focus:border-purple-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <option value="">Selecione a cidade</option>
+                  <option value="">Cidade</option>
                   {cities.map((city) => (
                     <option key={`${city.stateCode}-${city.name}`} value={city.name}>{city.name}</option>
                   ))}
@@ -1562,14 +1561,14 @@ export default function MysticReportApp() {
         {currentStep === 1 && (
           <>
             {/* Header */}
-            <header className="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md rounded-b-2xl border-b border-x border-gray-200/50 dark:border-gray-700/50 mx-2 sm:mx-6 mt-2 sm:mt-3 overflow-visible pb-20 sm:pb-24">
-              <div className="max-w-5xl mx-auto px-3 sm:px-6 py-2 sm:py-3 flex items-end justify-between gap-2 min-h-[48px] sm:min-h-[52px] overflow-visible">
+            <header className="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md rounded-b-2xl border-b border-x border-gray-200/50 dark:border-gray-700/50 mx-2 sm:mx-6 mt-2 sm:mt-3 overflow-visible">
+              <div className="max-w-5xl mx-auto pl-2 pr-2 sm:pl-3 sm:pr-4 py-1 sm:py-2 flex items-end justify-between gap-2 min-h-0 overflow-visible">
                 <Link
                   href="/"
-                  className="shrink-0 flex items-end -mb-16 sm:-mb-20"
+                  className="shrink-0 flex items-end -mb-10 sm:-mb-12 -ml-0.5 sm:-ml-1"
                   aria-label="Astroglix - início"
                 >
-                  <Image src={logoAstroglix} alt="Astroglix" className="h-28 sm:h-32 w-auto object-contain object-left-bottom" />
+                  <Image src="/logo_astroglix2.png" alt="Astroglix" width={240} height={96} className="h-28 sm:h-32 w-auto object-contain object-left-bottom" />
                 </Link>
                 <nav className="flex items-center gap-1 sm:gap-2" aria-label="Menu principal">
                   <a
@@ -1589,7 +1588,7 @@ export default function MysticReportApp() {
             </header>
 
             {/* Hero como na referência */}
-            <section className="max-w-4xl mx-auto px-3 sm:px-4 py-8 sm:py-16 text-center">
+            <section className="max-w-4xl mx-auto px-3 sm:px-4 pt-14 sm:pt-16 pb-8 sm:pb-16 text-center">
               <h1 className="text-2xl sm:text-3xl md:text-[36px] leading-tight sm:leading-[40px] font-bold mb-4 sm:mb-6 bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
                 Seu mapa não determina o seu destino.<br />
                 Ele revela o manual de instruções da sua vida.
@@ -1841,9 +1840,9 @@ export default function MysticReportApp() {
           <div className="container mx-auto px-3 sm:px-4 max-w-6xl">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 sm:gap-8 mb-6 sm:mb-8">
               <div className="min-w-0">
-                <Image src={logoAstroglix} alt="Astroglix" className="h-28 sm:h-32 w-auto object-contain mb-3" />
+                <Image src="/logo_astroglix2.png" alt="Astroglix" width={240} height={96} className="h-28 sm:h-32 w-auto object-contain mb-3" />
                 <p className="text-[14px] sm:text-[16px] leading-[22px] sm:leading-[24px] text-gray-600 dark:text-gray-400">
-                  Leitura simbólica e estratégica integrando numerologia, astrologia e sistemas orientais.
+                  Leitura estratégica  integrando numerologia, astrologia e sistemas orientais.
                 </p>
                 <p className="text-[13px] sm:text-[14px] leading-[18px] sm:leading-[20px] text-gray-500 dark:text-gray-500 mt-2">
                   Sem promessas absolutas. Com método. • Dados protegidos • LGPD • Pagamento seguro via Kiwify

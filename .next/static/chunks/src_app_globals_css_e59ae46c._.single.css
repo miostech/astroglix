@@ -1311,6 +1311,10 @@
     margin-right: calc(var(--spacing) * 4);
   }
 
+  .-mb-10 {
+    margin-bottom: calc(var(--spacing) * -10);
+  }
+
   .-mb-16 {
     margin-bottom: calc(var(--spacing) * -16);
   }
@@ -1341,6 +1345,14 @@
 
   .mb-8 {
     margin-bottom: calc(var(--spacing) * 8);
+  }
+
+  .mb-10 {
+    margin-bottom: calc(var(--spacing) * 10);
+  }
+
+  .-ml-0\.5 {
+    margin-left: calc(var(--spacing) * -.5);
   }
 
   .-ml-4 {
@@ -3311,6 +3323,10 @@
     padding-top: calc(var(--spacing) * 4);
   }
 
+  .pt-14 {
+    padding-top: calc(var(--spacing) * 14);
+  }
+
   .pt-24 {
     padding-top: calc(var(--spacing) * 24);
   }
@@ -3341,6 +3357,10 @@
 
   .pb-4 {
     padding-bottom: calc(var(--spacing) * 4);
+  }
+
+  .pb-8 {
+    padding-bottom: calc(var(--spacing) * 8);
   }
 
   .pb-20 {
@@ -6011,6 +6031,12 @@
   }
 
   @media (min-width: 40rem) {
+    .sm\:-mb-12 {
+      margin-bottom: calc(var(--spacing) * -12);
+    }
+  }
+
+  @media (min-width: 40rem) {
     .sm\:-mb-20 {
       margin-bottom: calc(var(--spacing) * -20);
     }
@@ -6043,6 +6069,12 @@
   @media (min-width: 40rem) {
     .sm\:mb-12 {
       margin-bottom: calc(var(--spacing) * 12);
+    }
+  }
+
+  @media (min-width: 40rem) {
+    .sm\:-ml-1 {
+      margin-left: calc(var(--spacing) * -1);
     }
   }
 
@@ -6121,6 +6153,12 @@
   @media (min-width: 40rem) {
     .sm\:h-20 {
       height: calc(var(--spacing) * 20);
+    }
+  }
+
+  @media (min-width: 40rem) {
+    .sm\:h-24 {
+      height: calc(var(--spacing) * 24);
     }
   }
 
@@ -6433,6 +6471,12 @@
   }
 
   @media (min-width: 40rem) {
+    .sm\:py-2 {
+      padding-block: calc(var(--spacing) * 2);
+    }
+  }
+
+  @media (min-width: 40rem) {
     .sm\:py-2\.5 {
       padding-block: calc(var(--spacing) * 2.5);
     }
@@ -6481,6 +6525,12 @@
   }
 
   @media (min-width: 40rem) {
+    .sm\:pt-16 {
+      padding-top: calc(var(--spacing) * 16);
+    }
+  }
+
+  @media (min-width: 40rem) {
     .sm\:pt-28 {
       padding-top: calc(var(--spacing) * 28);
     }
@@ -6493,6 +6543,18 @@
   }
 
   @media (min-width: 40rem) {
+    .sm\:pr-4 {
+      padding-right: calc(var(--spacing) * 4);
+    }
+  }
+
+  @media (min-width: 40rem) {
+    .sm\:pb-16 {
+      padding-bottom: calc(var(--spacing) * 16);
+    }
+  }
+
+  @media (min-width: 40rem) {
     .sm\:pb-24 {
       padding-bottom: calc(var(--spacing) * 24);
     }
@@ -6501,6 +6563,12 @@
   @media (min-width: 40rem) {
     .sm\:pl-2\.5 {
       padding-left: calc(var(--spacing) * 2.5);
+    }
+  }
+
+  @media (min-width: 40rem) {
+    .sm\:pl-3 {
+      padding-left: calc(var(--spacing) * 3);
     }
   }
 

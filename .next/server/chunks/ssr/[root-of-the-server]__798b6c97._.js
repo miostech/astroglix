@@ -186,7 +186,7 @@ const viewport = {
     maximumScale: 5
 };
 const metadata = {
-    title: "Astroglix — Mapa do destino",
+    title: "Astroglix — Leitura estratégica ",
     description: "Numerologia, Astrologia Ocidental, Tradição Oriental e Astrocartografia. Seu mapa revela o manual de instruções da sua vida. Não é previsão. É direção."
 };
 function RootLayout({ children }) {

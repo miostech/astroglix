@@ -6734,7 +6734,7 @@ const inspirationalQuotes = [
 const FAQ_ITEMS = [
     {
         pergunta: 'Isso é adivinhação?',
-        resposta: 'Não. O Astroglix trabalha com leitura simbólica e estratégica, com base em cálculos e interpretação estruturada. O foco é clareza, padrões e decisões melhores — não promessas.'
+        resposta: 'Não. O Astroglix trabalha com Leitura estratégica , com base em cálculos e interpretação estruturada. O foco é clareza, padrões e decisões melhores — não promessas.'
     },
     {
         pergunta: 'Mapa natal e mapa astral são diferentes?',
@@ -9630,7 +9630,7 @@ function MysticReportApp() {
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                                 className: "text-[14px] sm:text-[16px] leading-[22px] sm:leading-[24px] text-gray-600 dark:text-gray-400",
-                                                children: "Leitura simbólica e estratégica integrando numerologia, astrologia e sistemas orientais."
+                                                children: "Leitura estratégica  integrando numerologia, astrologia e sistemas orientais."
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/page.tsx",
                                                 lineNumber: 1699,
