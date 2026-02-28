@@ -75,7 +75,6 @@ const orderSchema = new mongoose.Schema(
 )
 
 orderSchema.index({ email: 1, createdAt: -1 })
-orderSchema.index({ paymentId: 1 }, { unique: true })
 
 // Next.js may re-use modules; ensure we use the same model instance
 const OrderModel =

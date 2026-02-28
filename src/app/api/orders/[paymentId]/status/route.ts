@@ -27,7 +27,7 @@ export async function PATCH(
         paymentConfirmedAt: paymentStatus === 'approved' ? new Date(paymentConfirmedAt) : null,
         ...(kiwifyOrderId != null && { kiwifyOrderId })
       },
-      { new: true }
+      { returnDocument: 'after' }
     )
       .lean()
       .exec()

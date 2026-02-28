@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
             paymentConfirmedAt: new Date(),
             kiwifyOrderId: orderId ?? undefined
           },
-          { sort: { createdAt: -1 }, new: true }
+          { sort: { createdAt: -1 }, returnDocument: 'after' }
         )
           .lean()
           .exec()
