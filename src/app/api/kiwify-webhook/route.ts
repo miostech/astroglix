@@ -17,11 +17,26 @@ export async function POST(request: NextRequest) {
     const isApproved = ['approved', 'paid', 'completed', 'paid_out'].includes(String(status).toLowerCase())
 
     if (isApproved) {
-      const customerEmail = body.customer_email ?? body.email ?? body.buyer?.email
-      const customerName = body.customer_name ?? body.name ?? body.buyer?.name ?? ''
+      const customerEmail =
+        body.Customer?.email ??
+        body.customer_email ??
+        body.email ??
+        body.buyer?.email
+      const customerName =
+        body.Customer?.full_name ??
+        body.Customer?.first_name ??
+        body.customer_name ??
+        body.name ??
+        body.buyer?.name ??
+        ''
       const orderId = body.order_id ?? body.id ?? body.transaction_id
 
       console.log('✅ Pagamento aprovado na Kiwify:', { customer_email: customerEmail, customer_name: customerName, order_id: orderId })
+
+      if (!customerEmail?.trim()) {
+        console.warn('⚠️ Webhook sem email do cliente (Customer.email), ignorando atualização de pedido')
+        return NextResponse.json({ success: false, message: 'Payload sem email do cliente' }, { status: 400 })
+      }
 
       const tmpDir = join(process.cwd(), 'tmp')
       const fs = require('fs')
