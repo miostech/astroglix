@@ -17,19 +17,16 @@ export async function GET(request: NextRequest) {
 
     const Order = await getOrderModel()
     const doc = await Order.findOne({ paymentId }).lean().exec()
-
-    if (!doc) {
-      return NextResponse.json({ success: false, error: 'Dados não encontrados ou expirados' }, { status: 404 })
+    if (doc) {
+      console.log('✅ Dados encontrados no MongoDB para:', paymentId)
+      const data = orderToSavedData(doc as Parameters<typeof orderToSavedData>[0])
+      return NextResponse.json({ success: true, data })
     }
 
-    if (doc.paymentStatus !== 'approved') {
-      console.log('⏳ Pedido encontrado mas pagamento ainda pendente:', paymentId)
-      return NextResponse.json({ success: false, error: 'Pagamento ainda não confirmado', pending: true }, { status: 402 })
-    }
-
-    console.log('✅ Dados encontrados no MongoDB para:', paymentId)
-    const data = orderToSavedData(doc as Parameters<typeof orderToSavedData>[0])
-    return NextResponse.json({ success: true, data })
+    return NextResponse.json({
+      success: false,
+      error: 'Dados não encontrados ou expirados'
+    }, { status: 404 })
   } catch (error) {
     console.error('💥 Erro na API get-report:', error)
     
