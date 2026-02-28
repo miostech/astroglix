@@ -92,7 +92,7 @@ export type OrderDocument = mongoose.InferSchemaType<typeof orderSchema> & {
   updatedAt: Date
 }
 
-/** Shape expected by get-report and get-latest-payment (legacy tmp file format) */
+/** Shape retornado por get-report e get-latest-payment (compatível com o que o front espera) */
 export type SavedDataShape = {
   paymentId: string
   customerData: { name: string; email: string }

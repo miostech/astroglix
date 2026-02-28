@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createKiwifyPaymentUrl, KIWIFY_CONFIG } from '@/lib/stripe'
-import { writeFile } from 'fs/promises'
-import { join } from 'path'
 import { getOrderModel } from '@/models/Order'
 
 export async function POST(request: NextRequest) {
@@ -30,22 +28,6 @@ export async function POST(request: NextRequest) {
     const cancelUrl = `${request.nextUrl.origin}/success?status=canceled&canceled=true`
 
     if (personalData) {
-      const dataToSave = {
-        paymentId,
-        customerData,
-        personalData,
-        timestamp: new Date().toISOString(),
-        planType,
-        amount
-      }
-      try {
-        const dataDir = join(process.cwd(), 'tmp')
-        const filePath = join(dataDir, `${paymentId}.json`)
-        await writeFile(filePath, JSON.stringify(dataToSave, null, 2))
-        console.log('✅ Dados salvos temporariamente:', paymentId)
-      } catch (saveError) {
-        console.error('⚠️ Erro ao salvar dados temporários:', saveError)
-      }
       try {
         const Order = await getOrderModel()
         await Order.create({
