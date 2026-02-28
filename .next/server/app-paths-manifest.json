@@ -1,5 +1,0 @@
-{
-  "/api/check-horoscope-subscription/route": "app/api/check-horoscope-subscription/route.js",
-  "/icon.svg/route": "app/icon.svg/route.js",
-  "/page": "app/page.js"
-}
