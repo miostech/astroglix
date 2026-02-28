@@ -16,15 +16,27 @@ export async function GET(request: NextRequest) {
     }
 
     const Order = await getOrderModel()
-    const doc = await Order.findOne({ email: customerEmail.trim().toLowerCase() })
+    const doc = await Order.findOne({
+      email: customerEmail.trim().toLowerCase(),
+      paymentStatus: 'approved'
+    })
       .sort({ createdAt: -1 })
       .lean()
       .exec()
 
     if (doc) {
-      console.log('✅ Último pagamento encontrado no MongoDB:', doc.paymentId)
+      console.log('✅ Último pagamento aprovado encontrado no MongoDB:', doc.paymentId)
       const data = orderToSavedData(doc as Parameters<typeof orderToSavedData>[0])
       return NextResponse.json({ success: true, data })
+    }
+
+    const pending = await Order.findOne({
+      email: customerEmail.trim().toLowerCase(),
+      paymentStatus: 'pending'
+    }).lean().exec()
+
+    if (pending) {
+      return NextResponse.json({ success: false, error: 'Pagamento ainda não confirmado', pending: true }, { status: 402 })
     }
 
     return NextResponse.json({
