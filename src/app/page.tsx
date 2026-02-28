@@ -1076,30 +1076,49 @@ export default function MysticReportApp() {
         throw new Error('Por favor, preencha a cidade de residência atual antes de continuar.')
       }
 
-      // Por enquanto: pagamento comentado — ir direto para o resultado
-      // console.log('BOTÃO CLICADO! Função handlePayment executada para plano único R$28,00 - Kiwify')
-      // console.log('Validação passou, iniciando pagamento Kiwify para plano único R$28,00')
-      // const controller = new AbortController()
-      // const timeoutId = setTimeout(() => controller.abort(), 30000)
-      // try {
-      //   const response = await fetch('/api/create-kirvano-payment', { ... }) // rota usa Kiwify
-      //   ...
-      //   window.location.href = paymentData.paymentUrl
-      // } catch (fetchError) { ... }
-
-      // Gerar análise e ir direto para o resultado
-      const numerology = calculateCompleteNumerology(personalData.fullName, personalData.birthDate)
-      const astrology = calculateAstrology(personalData.birthDate, personalData.birthTime, personalData.birthPlace)
-      const chineseZodiac = getChineseZodiac(personalData.birthDate)
-      const astrocartography = calculateAstrocartography(personalData.fullName, personalData.birthDate, personalData.birthTime, personalData.birthPlace, personalData.currentCity)
-
-      setMysticReport({
-        numerology,
-        astrology,
-        chineseZodiac,
-        astrocartography
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 30000)
+      const response = await fetch('/api/create-kirvano-payment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          planType: 'one_time',
+          amount: 28,
+          currency: 'BRL',
+          customerData: {
+            name: personalData.fullName.trim(),
+            email: personalData.email.trim()
+          },
+          personalData: {
+            fullName: personalData.fullName.trim(),
+            email: personalData.email.trim(),
+            birthDate: personalData.birthDate,
+            birthTime: personalData.birthTime ?? '',
+            birthPlace: personalData.birthPlace.trim(),
+            currentCity: personalData.currentCity.trim()
+          }
+        }),
+        signal: controller.signal
       })
-      setCurrentStep(2)
+      clearTimeout(timeoutId)
+
+      const data = await response.json()
+      if (!response.ok) {
+        throw new Error(data.error || 'Erro ao iniciar pagamento. Tente novamente.')
+      }
+      if (!data.success || !data.paymentUrl) {
+        throw new Error('Resposta inválida do servidor de pagamento.')
+      }
+
+      // Salvar no localStorage para a página de sucesso identificar o cliente ao retornar da Kiwify
+      if (typeof window !== 'undefined') {
+        window.localStorage.setItem('last_payment_id', data.paymentId ?? '')
+        window.localStorage.setItem('last_customer_name', personalData.fullName.trim())
+        window.localStorage.setItem('last_customer_email', personalData.email.trim())
+      }
+
+      window.location.href = data.paymentUrl
+      return
     } catch (error) {
       console.error('Erro ao gerar análise:', error)
       let userMessage = 'Erro ao gerar análise. Tente novamente.'
