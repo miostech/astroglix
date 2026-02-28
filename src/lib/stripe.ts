@@ -8,9 +8,6 @@ export const KIWIFY_CONFIG = {
   price: 28.0
 }
 
-// Compatibilidade: manter KIRVANO_CONFIG apontando para Kiwify (evitar quebrar imports antigos)
-export const KIRVANO_CONFIG = KIWIFY_CONFIG
-
 /** Cria URL de checkout Kiwify com dados do cliente e URLs de retorno */
 export const createKiwifyPaymentUrl = (
   customerData: { name: string; email: string; cpf?: string },
@@ -28,6 +25,3 @@ export const createKiwifyPaymentUrl = (
   })
   return `${checkoutUrl}?${params.toString()}`
 }
-
-/** @deprecated Use createKiwifyPaymentUrl */
-export const createKirvanoPaymentUrl = createKiwifyPaymentUrl

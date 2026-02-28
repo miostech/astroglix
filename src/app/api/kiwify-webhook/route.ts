@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { readFile, writeFile } from 'fs/promises'
 import { join } from 'path'
+import { getOrderModel } from '@/models/Order'
 
 /**
  * Webhook para notificações de pagamento da Kiwify.
@@ -24,7 +25,7 @@ export async function POST(request: NextRequest) {
 
       const tmpDir = join(process.cwd(), 'tmp')
       const fs = require('fs')
-      const files = fs.readdirSync(tmpDir).filter((file: string) => file.endsWith('.json') && (file.startsWith('kirvano_') || file.startsWith('kiwify_')))
+      const files = fs.readdirSync(tmpDir).filter((file: string) => file.endsWith('.json') && file.startsWith('kiwify_'))
 
       let foundData = null
       let foundFile = null
@@ -50,7 +51,37 @@ export async function POST(request: NextRequest) {
         foundData.paymentConfirmedAt = new Date().toISOString()
         const filePath = join(tmpDir, foundFile)
         await writeFile(filePath, JSON.stringify(foundData, null, 2))
-        console.log('✅ Dados atualizados com status de pagamento aprovado')
+        console.log('✅ Dados atualizados com status de pagamento aprovado (tmp)')
+      }
+
+      try {
+        const Order = await getOrderModel()
+        const filter: { email: string; fullName?: string } = {
+          email: String(customerEmail).trim().toLowerCase()
+        }
+        if (customerName?.trim()) {
+          filter.fullName = customerName.trim()
+        }
+        const updated = await Order.findOneAndUpdate(
+          filter,
+          {
+            paymentStatus: 'approved',
+            paymentConfirmedAt: new Date(),
+            kiwifyOrderId: orderId ?? undefined
+          },
+          { sort: { createdAt: -1 }, new: true }
+        )
+          .lean()
+          .exec()
+        if (updated) {
+          console.log('✅ Pedido atualizado no MongoDB:', updated.paymentId)
+          return NextResponse.json({ success: true, message: 'Pagamento confirmado', paymentId: updated.paymentId })
+        }
+      } catch (mongoError) {
+        console.error('⚠️ Erro ao atualizar pedido no MongoDB:', mongoError)
+      }
+
+      if (foundData) {
         return NextResponse.json({ success: true, message: 'Pagamento confirmado', paymentId: foundData.paymentId })
       }
 

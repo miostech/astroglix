@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { readFile } from 'fs/promises'
 import { join } from 'path'
+import { getOrderModel, orderToSavedData } from '@/models/Order'
 
 export async function GET(request: NextRequest) {
   try {
@@ -10,9 +11,30 @@ export async function GET(request: NextRequest) {
 
     console.log('🔍 Buscando último pagamento para:', { customerEmail, customerName })
 
-    // Buscar dados salvos
+    if (customerEmail?.trim()) {
+      try {
+        const Order = await getOrderModel()
+        const filter: { email: string; fullName?: string } = {
+          email: customerEmail.trim().toLowerCase()
+        }
+        if (customerName?.trim()) {
+          filter.fullName = customerName.trim()
+        }
+        const doc = await Order.findOne(filter)
+        .sort({ createdAt: -1 })
+        .lean()
+        .exec()
+        if (doc) {
+          console.log('✅ Último pagamento encontrado no MongoDB:', doc.paymentId)
+          const data = orderToSavedData(doc as Parameters<typeof orderToSavedData>[0])
+          return NextResponse.json({ success: true, data })
+        }
+      } catch (mongoError) {
+        console.warn('⚠️ Busca MongoDB falhou, tentando tmp:', mongoError)
+      }
+    }
+
     const tmpDir = join(process.cwd(), 'tmp')
-    
     try {
       const fs = require('fs')
       const files = fs.readdirSync(tmpDir).filter((file: string) => file.endsWith('.json'))

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createKiwifyPaymentUrl, KIWIFY_CONFIG } from '@/lib/stripe'
 import { writeFile } from 'fs/promises'
 import { join } from 'path'
+import { getOrderModel } from '@/models/Order'
 
 export async function POST(request: NextRequest) {
   try {
@@ -29,21 +30,40 @@ export async function POST(request: NextRequest) {
     const cancelUrl = `${request.nextUrl.origin}/success?status=canceled&canceled=true`
 
     if (personalData) {
+      const dataToSave = {
+        paymentId,
+        customerData,
+        personalData,
+        timestamp: new Date().toISOString(),
+        planType,
+        amount
+      }
       try {
-        const dataToSave = {
-          paymentId,
-          customerData,
-          personalData,
-          timestamp: new Date().toISOString(),
-          planType,
-          amount
-        }
         const dataDir = join(process.cwd(), 'tmp')
         const filePath = join(dataDir, `${paymentId}.json`)
         await writeFile(filePath, JSON.stringify(dataToSave, null, 2))
         console.log('✅ Dados salvos temporariamente:', paymentId)
       } catch (saveError) {
         console.error('⚠️ Erro ao salvar dados temporários:', saveError)
+      }
+      try {
+        const Order = await getOrderModel()
+        await Order.create({
+          paymentId,
+          fullName: personalData.fullName ?? customerData.name,
+          email: (personalData.email ?? customerData.email).trim().toLowerCase(),
+          birthDate: personalData.birthDate ?? '',
+          birthTime: personalData.birthTime ?? '',
+          birthPlace: personalData.birthPlace ?? '',
+          currentCity: personalData.currentCity ?? '',
+          planType: planType ?? 'one_time',
+          amount,
+          currency: currency ?? 'BRL',
+          paymentStatus: 'pending'
+        })
+        console.log('✅ Pedido salvo no MongoDB:', paymentId)
+      } catch (mongoError) {
+        console.error('⚠️ Erro ao salvar pedido no MongoDB:', mongoError)
       }
     }
 

@@ -23,7 +23,7 @@ A funcionalidade de Horóscopo Diário foi implementada como uma seção paga se
 
 ### Atualizações
 - `src/app/page.tsx` - Integração da seção de horóscopo
-- `src/app/api/kirvano-webhook/route.ts` - Suporte a assinaturas no webhook
+- `src/app/api/kiwify-webhook/route.ts` - Suporte a assinaturas no webhook
 
 ## Funcionalidades
 
@@ -37,7 +37,7 @@ A funcionalidade de Horóscopo Diário foi implementada como uma seção paga se
 
 ### 2. Sistema de Assinatura
 - **Preço**: R$ 9,90/mês
-- **Pagamento**: Integrado com Kirvano
+- **Pagamento**: Integrado com Kiwify
 - **Renovação**: Automática
 - **Cancelamento**: A qualquer momento
 
@@ -53,14 +53,14 @@ A funcionalidade de Horóscopo Diário foi implementada como uma seção paga se
 3. Navega para a aba "Horóscopo Diário"
 4. Vê o horóscopo detalhado do dia
 5. Clica em "Assinar Agora" para receber diariamente
-6. É redirecionado para pagamento Kirvano
+6. É redirecionado para pagamento Kiwify
 7. Após pagamento, é direcionado para página de sucesso
 
 ### Para o Sistema
 1. Calcula signo solar baseado na data de nascimento
 2. Gera horóscopo personalizado com previsões específicas
 3. Verifica status da assinatura via API
-4. Processa pagamentos através do webhook Kirvano
+4. Processa pagamentos através do webhook Kiwify
 5. Ativa assinatura e inicia envios diários
 
 ## Estrutura de Dados
@@ -88,7 +88,7 @@ interface HoroscopeData {
 - Áries, Touro, Gêmeos, Câncer, Leão, Virgem
 - Libra, Escorpião, Sagitário, Capricórnio, Aquário, Peixes
 
-## Integração com Kirvano
+## Integração com Kiwify
 
 ### URLs de Pagamento
 - **Sucesso**: `/payment/horoscope-success`
@@ -102,7 +102,7 @@ interface HoroscopeData {
 ## Próximos Passos
 
 ### Em Produção
-1. **Integração com Kirvano API** - Substituir URLs simuladas
+1. **Integração com Kiwify API** - Substituir URLs simuladas
 2. **Sistema de E-mail** - Implementar envio automático diário
 3. **Banco de Dados** - Substituir Map simulado por banco real
 4. **Autenticação** - Sistema de login para assinantes
@@ -120,12 +120,12 @@ interface HoroscopeData {
 ### Variáveis de Ambiente
 ```env
 NEXT_PUBLIC_BASE_URL=http://localhost:3000
-KIRVANO_WEBHOOK_SECRET=your_webhook_secret
+KIWIFY_WEBHOOK_SECRET=your_webhook_secret
 ```
 
-### URLs da Kirvano
-- **Checkout Horóscopo**: `https://pay.kirvano.com/horoscope-subscription`
-- **Webhook**: `/api/kirvano-webhook`
+### URLs da Kiwify
+- **Checkout Horóscopo**: `https://pay.kiwify.com.br/SEU_LINK_HOROSCOPO`
+- **Webhook**: `/api/kiwify-webhook`
 
 ## Testes
 

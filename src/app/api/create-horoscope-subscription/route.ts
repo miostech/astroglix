@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-// Configuração da Kirvano para assinatura mensal de horóscopo
+// Configuração da Kiwify para assinatura mensal de horóscopo
 const HOROSCOPE_SUBSCRIPTION_CONFIG = {
-  checkoutUrl: 'https://pay.kirvano.com/horoscope-subscription',
+  checkoutUrl: 'https://pay.kiwify.com.br/SEU_LINK_HOROSCOPO',
   currency: 'BRL',
   country: 'BR',
   productName: 'Assinatura Horóscopo Diário',
@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
       `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/payment/cancel`
     )
 
-    // Simular criação de sessão de pagamento (em produção, integrar com Kirvano API)
+    // Simular criação de sessão de pagamento (em produção, integrar com Kiwify API)
     const paymentId = `horoscope_sub_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
     
     console.log('🚀 Assinatura de horóscopo criada:', {

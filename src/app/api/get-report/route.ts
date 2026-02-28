@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { readFile, unlink } from 'fs/promises'
 import { join } from 'path'
+import { getOrderModel, orderToSavedData } from '@/models/Order'
 
 export async function GET(request: NextRequest) {
   try {
@@ -16,21 +17,27 @@ export async function GET(request: NextRequest) {
 
     console.log('🔍 Buscando dados para paymentId:', paymentId)
 
-    // Buscar dados salvos pelo payment_id exato
+    try {
+      const Order = await getOrderModel()
+      const doc = await Order.findOne({ paymentId }).lean().exec()
+      if (doc) {
+        console.log('✅ Dados encontrados no MongoDB para:', paymentId)
+        const data = orderToSavedData(doc as Parameters<typeof orderToSavedData>[0])
+        return NextResponse.json({ success: true, data })
+      }
+    } catch (mongoError) {
+      console.warn('⚠️ Busca MongoDB falhou, tentando tmp:', mongoError)
+    }
+
     const filePath = join(process.cwd(), 'tmp', `${paymentId}.json`)
-    
     try {
       const fileContent = await readFile(filePath, 'utf-8')
       const savedData = JSON.parse(fileContent)
-      
-      console.log('✅ Dados encontrados para:', paymentId)
-      
-      // Retornar dados para gerar o relatório
+      console.log('✅ Dados encontrados em tmp para:', paymentId)
       return NextResponse.json({
         success: true,
         data: savedData
       })
-      
     } catch (fileError) {
       console.log('⚠️ Arquivo específico não encontrado, tentando buscar arquivo mais recente...')
       
@@ -38,7 +45,7 @@ export async function GET(request: NextRequest) {
       try {
         const fs = require('fs')
         const tmpDir = join(process.cwd(), 'tmp')
-        const files = fs.readdirSync(tmpDir).filter((file: string) => file.endsWith('.json') && (file.startsWith('kirvano_') || file.startsWith('kiwify_')))
+        const files = fs.readdirSync(tmpDir).filter((file: string) => file.endsWith('.json') && file.startsWith('kiwify_'))
         
         if (files.length === 0) {
           throw new Error('Nenhum arquivo encontrado')
