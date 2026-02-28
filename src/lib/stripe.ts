@@ -1,9 +1,9 @@
 // Configuração da Kiwify (pagamentos)
 export const KIWIFY_CONFIG = {
-  checkoutUrl: 'https://pay.kiwify.com.br/SEU_LINK_AQUI', // Substitua pelo link do seu produto na Kiwify
+  checkoutUrl: 'https://pay.kiwify.com.br/UFB5v6k', // Substitua pelo link do seu produto na Kiwify
   currency: 'BRL',
   country: 'BR',
-  productName: 'Relatório Místico Completo',
+  productName: 'Astroglix — Mapa do destino',
   productDescription: 'Numerologia, Astrologia, Zodíaco Chinês e Astrocartografia',
   price: 28.0
 }
