@@ -11,6 +11,7 @@ import { getOrderModel } from '@/models/Order'
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
+    
     console.log('🔔 Webhook Kiwify recebido:', body)
 
     const status = body.status ?? body.payment_status ?? body.order_status
