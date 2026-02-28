@@ -1,53 +1,34 @@
 'use client'
 
 import { useEffect, useState, Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { CheckCircle, Loader2 } from 'lucide-react'
 
 function PaymentRedirectContent() {
   const [redirecting, setRedirecting] = useState(true)
   const [message, setMessage] = useState('Processando seu pagamento...')
+  const searchParams = useSearchParams()
 
   useEffect(() => {
-    const findAndRedirectToLatestPayment = async () => {
-      try {
-        console.log('🔍 Buscando payment_id no localStorage...')
-        
-        // Buscar o último pagamento dos dados salvos no localStorage
-        const savedPaymentId = localStorage.getItem('last_payment_id')
-        const savedCustomerName = localStorage.getItem('last_customer_name')
-        const savedCustomerEmail = localStorage.getItem('last_customer_email')
-        
-        console.log('📦 Dados encontrados:', { savedPaymentId, savedCustomerName, savedCustomerEmail })
-        
-        if (savedPaymentId) {
-          setMessage('Redirecionando para seu relatório...')
-          console.log('✅ Redirecionando com payment_id:', savedPaymentId)
-          
-          // Redirecionar imediatamente - sem delay
-          window.location.href = `/success?status=success&payment_id=${savedPaymentId}&auto_generate=true`
-          return
-        }
+    const findAndRedirectToLatestPayment = () => {
+      const urlPaymentId = searchParams.get('payment_id')
+      const urlEmail = searchParams.get('email')
 
-        // Se não temos payment_id salvo, redirecionar para página de sucesso geral
-        console.log('⚠️ Nenhum payment_id encontrado, redirecionando para sucesso geral')
-        setMessage('Redirecionando para seu relatório...')
-        
-        // Redirecionar imediatamente - sem delay
-        window.location.href = '/success?status=success&auto_generate=true'
+      const paymentId = urlPaymentId || localStorage.getItem('last_payment_id') || ''
+      const email = urlEmail || localStorage.getItem('last_customer_email') || ''
 
-      } catch (error) {
-        console.error('❌ Erro ao buscar último pagamento:', error)
-        setMessage('Redirecionando para seu relatório...')
-        
-        // Mesmo com erro, redirecionar
-        window.location.href = '/success?status=success&auto_generate=true'
-      }
+      setMessage('Redirecionando para seu relatório...')
+
+      const params = new URLSearchParams({ status: 'success', auto_generate: 'true' })
+      if (paymentId) params.set('payment_id', paymentId)
+      if (email) params.set('email', email)
+
+      window.location.href = `/success?${params.toString()}`
     }
 
-    // Reduzir delay inicial de 3 segundos para 500ms
     const timer = setTimeout(findAndRedirectToLatestPayment, 500)
     return () => clearTimeout(timer)
-  }, [])
+  }, [searchParams])
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-indigo-50 dark:from-gray-900 dark:via-purple-900 dark:to-indigo-900 flex items-center justify-center px-4">

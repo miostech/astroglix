@@ -24,7 +24,8 @@ export async function POST(request: NextRequest) {
 
     const paymentId = `kiwify_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
 
-    const successUrl = `${request.nextUrl.origin}/payment/redirect`
+    const email = (customerData.email ?? '').trim().toLowerCase()
+    const successUrl = `${request.nextUrl.origin}/payment/redirect?payment_id=${paymentId}&email=${encodeURIComponent(email)}`
     const cancelUrl = `${request.nextUrl.origin}/success?status=canceled&canceled=true`
 
     if (personalData) {

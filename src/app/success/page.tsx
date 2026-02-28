@@ -455,47 +455,31 @@ function SuccessPageContent() {
   const fetchAndGenerateReport = useCallback(async (paymentId?: string) => {
     setIsGeneratingReport(true)
     try {
-      console.log('🔍 Tentando buscar dados para gerar relatório...')
-      console.log('PaymentId recebido:', paymentId)
-      
       let result = null
-      
-      // Se temos payment_id, tentar buscar dados específicos
+
       if (paymentId) {
-        console.log('📡 Buscando dados pelo payment_id...')
         const response = await fetch(`/api/get-report?payment_id=${paymentId}`)
         result = await response.json()
-        console.log('Resultado da API:', result)
       }
-      
-      // Se não encontrou dados específicos, tentar buscar pelo localStorage
-      if (!result?.success && typeof window !== 'undefined') {
-        console.log('📦 Tentando buscar do localStorage...')
-        const savedName = localStorage.getItem('last_customer_name')
-        const savedEmail = localStorage.getItem('last_customer_email')
-        const savedPaymentId = localStorage.getItem('last_payment_id')
-        
-        console.log('Dados do localStorage:', { savedName, savedEmail, savedPaymentId })
-        
-        if (savedName && savedEmail && savedPaymentId) {
-          const response = await fetch(`/api/get-latest-payment?email=${encodeURIComponent(savedEmail)}&name=${encodeURIComponent(savedName)}`)
+
+      // Fallback: buscar por email (da URL ou do localStorage)
+      if (!result?.success) {
+        const urlEmail = searchParams.get('email')
+        const email = urlEmail || (typeof window !== 'undefined' ? localStorage.getItem('last_customer_email') : null)
+        if (email) {
+          const response = await fetch(`/api/get-latest-payment?email=${encodeURIComponent(email)}`)
           result = await response.json()
-          console.log('Resultado da API get-latest-payment:', result)
         }
       }
-      
+
       if (result?.success && result.data) {
-        console.log('✅ Dados encontrados! Gerando relatório...')
         const { personalData } = result.data
-        
-        // Gerar mapa místico COMPLETO
+
         const numerology = calculateCompleteNumerology(personalData.fullName, personalData.birthDate)
         const astrology = calculateAstrology(personalData.birthDate, personalData.birthTime, personalData.birthPlace)
         const chineseZodiac = getChineseZodiac(personalData.birthDate)
         const astrocartography = calculateAstrocartography(personalData.fullName, personalData.birthDate, personalData.birthTime, personalData.birthPlace, personalData.currentCity)
-        
-        console.log('📊 Relatório gerado com sucesso!')
-        
+
         setReportData({
           personalData,
           numerology,
@@ -503,26 +487,13 @@ function SuccessPageContent() {
           chineseZodiac,
           astrocartography
         })
-        
-        // Limpar dados temporários e localStorage
-        if (result.data.paymentId) {
-          await fetch(`/api/get-report?payment_id=${result.data.paymentId}`, { method: 'DELETE' })
-        }
-        
-        if (typeof window !== 'undefined') {
-          localStorage.removeItem('last_payment_id')
-          localStorage.removeItem('last_customer_name')
-          localStorage.removeItem('last_customer_email')
-        }
-      } else {
-        console.log('ℹ️ Nenhum dado encontrado automaticamente. Usuário pode clicar no botão para tentar.')
       }
     } catch (error) {
-      console.log('ℹ️ Não foi possível gerar relatório automaticamente:', error)
+      console.log('Erro ao gerar relatório automaticamente:', error)
     } finally {
       setIsGeneratingReport(false)
     }
-  }, [])
+  }, [searchParams])
 
   const handleDownloadPDF = () => {
     if (!reportData) {
