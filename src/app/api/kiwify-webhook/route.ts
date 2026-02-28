@@ -13,7 +13,9 @@ export async function POST(request: NextRequest) {
     console.log('🔔 Webhook Kiwify recebido:', body)
 
     const status = body.status ?? body.payment_status ?? body.order_status
+    console.log('[WEBHOOK DEBUG] status extraído:', status)
     const isApproved = ['approved', 'paid', 'completed', 'paid_out'].includes(String(status).toLowerCase())
+    console.log('[WEBHOOK DEBUG] isApproved:', isApproved)
 
     if (isApproved) {
       const customerEmail =
@@ -23,15 +25,30 @@ export async function POST(request: NextRequest) {
         body.buyer?.email
       const orderId = body.order_id ?? body.id ?? body.transaction_id
 
-      console.log('✅ Pagamento aprovado na Kiwify:', { customer_email: customerEmail, order_id: orderId })
+      console.log('[WEBHOOK DEBUG] customerEmail:', customerEmail)
+      console.log('[WEBHOOK DEBUG] orderId:', orderId)
 
       if (!customerEmail?.trim()) {
-        console.warn('⚠️ Webhook sem email do cliente (Customer.email), ignorando atualização de pedido')
+        console.warn('⚠️ Webhook sem email do cliente, ignorando')
         return NextResponse.json({ success: false, message: 'Payload sem email do cliente' }, { status: 400 })
       }
 
+      const emailNormalized = String(customerEmail).trim().toLowerCase()
+      console.log('[WEBHOOK DEBUG] emailNormalized para filtro:', emailNormalized)
+      console.log('[WEBHOOK DEBUG] MONGO_URI definido:', !!process.env.MONGO_URI)
+
       const Order = await getOrderModel()
-      const filter = { email: String(customerEmail).trim().toLowerCase() }
+      console.log('[WEBHOOK DEBUG] Conexão MongoDB OK, buscando pedido...')
+
+      const filter = { email: emailNormalized }
+      console.log('[WEBHOOK DEBUG] Filtro MongoDB:', JSON.stringify(filter))
+
+      const existing = await Order.findOne(filter).sort({ createdAt: -1 }).lean().exec()
+      console.log('[WEBHOOK DEBUG] Pedido encontrado (findOne):', existing ? existing.paymentId : 'NENHUM')
+      if (existing) {
+        console.log('[WEBHOOK DEBUG] Email no banco:', existing.email, '| Status atual:', existing.paymentStatus)
+      }
+
       const updated = await Order.findOneAndUpdate(
         filter,
         {
@@ -44,14 +61,22 @@ export async function POST(request: NextRequest) {
         .lean()
         .exec()
 
+      console.log('[WEBHOOK DEBUG] Resultado findOneAndUpdate:', updated ? updated.paymentId : 'NULL')
+
       if (updated) {
-        console.log('✅ Pedido atualizado no MongoDB:', updated.paymentId)
+        console.log('✅ Pedido atualizado no MongoDB:', updated.paymentId, '| Novo status:', updated.paymentStatus)
         return NextResponse.json({ success: true, message: 'Pagamento confirmado', paymentId: updated.paymentId })
       }
+
+      console.log('[WEBHOOK DEBUG] Nenhum pedido encontrado para email:', emailNormalized)
+      const allOrders = await Order.find({}).select('email paymentId').lean().exec()
+      console.log('[WEBHOOK DEBUG] Total de pedidos no banco:', allOrders.length)
+      console.log('[WEBHOOK DEBUG] Emails no banco:', allOrders.map(o => o.email))
 
       return NextResponse.json({ success: false, message: 'Dados do cliente não encontrados' }, { status: 404 })
     }
 
+    console.log('[WEBHOOK DEBUG] Status não aprovado, ignorando:', status)
     return NextResponse.json({ success: true, message: 'Webhook recebido' })
   } catch (error) {
     console.error('💥 Erro no webhook Kiwify:', error)
