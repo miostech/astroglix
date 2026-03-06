@@ -1613,15 +1613,16 @@ export default function MysticReportApp() {
                 Seu mapa não determina o seu destino.<br />
                 Ele revela o manual de instruções da sua vida.
               </h1>
-              <div className="relative mb-6 sm:mb-8 rounded-xl sm:rounded-2xl overflow-hidden shadow-xl border border-gray-200 dark:border-gray-700 aspect-video w-full max-w-2xl mx-auto bg-gray-100 dark:bg-gray-800 min-h-[200px] sm:min-h-0">
+              <div className="relative mb-6 sm:mb-8 rounded-xl sm:rounded-2xl overflow-hidden shadow-xl border border-gray-200 dark:border-gray-700 aspect-video w-full max-w-2xl mx-auto bg-gray-800 min-h-[200px] sm:min-h-0">
                 <video
                   className="w-full h-full object-cover"
                   src="/Astroglix_site_horizontal.mp4"
+                  poster="/video-poster.png"
                   title="Astroglix site horizontal"
                   controls
                   playsInline
                   loop
-                  preload="metadata"
+                  preload="auto"
                 >
                   Seu navegador não suporta vídeo HTML5.
                 </video>
