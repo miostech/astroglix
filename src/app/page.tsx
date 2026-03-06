@@ -1614,13 +1614,17 @@ export default function MysticReportApp() {
                 Ele revela o manual de instruções da sua vida.
               </h1>
               <div className="relative mb-6 sm:mb-8 rounded-xl sm:rounded-2xl overflow-hidden shadow-xl border border-gray-200 dark:border-gray-700 aspect-video w-full max-w-2xl mx-auto bg-gray-100 dark:bg-gray-800 min-h-[200px] sm:min-h-0">
-                <iframe
-                  src="https://app.heygen.com/embeds/bbf30ede0f7c43368a201a3305578127"
+                <video
+                  className="w-full h-full object-cover"
+                  src="/Astroglix_site_horizontal.mp4"
                   title="Astroglix site horizontal"
-                  allow="encrypted-media; fullscreen"
-                  allowFullScreen
-                  className="absolute inset-0 w-full h-full"
-                />
+                  controls
+                  playsInline
+                  loop
+                  preload="metadata"
+                >
+                  Seu navegador não suporta vídeo HTML5.
+                </video>
               </div>
               <p className="text-base sm:text-[18px] leading-relaxed sm:leading-[28px] font-semibold text-gray-800 dark:text-gray-200 mb-3 sm:mb-4 text-balance">
                 Não é previsão.<br />É clareza de quem você é e pra onde pode ir.
