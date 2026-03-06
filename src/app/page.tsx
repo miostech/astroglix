@@ -1083,7 +1083,7 @@ export default function MysticReportApp() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           planType: 'one_time',
-          amount: 28,
+          amount: 35.9,
           currency: 'BRL',
           customerData: {
             name: personalData.fullName.trim(),
@@ -1187,11 +1187,12 @@ export default function MysticReportApp() {
           {/* Preço em destaque */}
           <div className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/50 dark:to-pink-900/50 rounded-2xl p-4 sm:p-6 mb-6 border border-purple-100/50 dark:border-purple-800/30">
             <div className="text-center">
-              <div className="text-2xl sm:text-3xl font-bold text-purple-600 dark:text-purple-400 mb-2">
-                R$ 28,00
+              <div className="flex flex-wrap items-center justify-center gap-2 mb-2">
+                <span className="text-base sm:text-lg text-gray-500 dark:text-gray-400 line-through">R$ 99,90</span>
+                <span className="text-2xl sm:text-3xl font-bold text-purple-600 dark:text-purple-400">R$ 35,90</span>
               </div>
               <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-                Análise Astrológica Completa - Pagamento único
+                Análise Astrológica Completa - Pagamento único (valor promocional)
               </p>
               <div className="flex flex-wrap items-center justify-center gap-1 sm:gap-2 mt-3 text-xs text-gray-500 dark:text-gray-400">
                 <div className="flex items-center gap-1">
@@ -1713,7 +1714,10 @@ export default function MysticReportApp() {
                     <h3 className="text-[15px] sm:text-[16px] leading-[22px] sm:leading-[24px] font-medium text-gray-900 dark:text-white">Análise Astrológica Completa</h3>
                     <p className="text-[14px] sm:text-[18px] leading-[22px] sm:leading-[28px] text-gray-600 dark:text-gray-400 mt-1">Numerologia + Astrologia + Zodíaco Chinês + Astrocartografia</p>
                   </div>
-                  <p className="text-2xl sm:text-[30px] leading-tight sm:leading-[36px] font-semibold text-gray-900 dark:text-white shrink-0">R$ 28,00</p>
+                  <div className="shrink-0 flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                    <span className="text-base text-gray-500 dark:text-gray-400 line-through">De R$ 99,90</span>
+                    <span className="text-2xl sm:text-[30px] leading-tight sm:leading-[36px] font-semibold text-gray-900 dark:text-white">R$ 35,90</span>
+                  </div>
                 </div>
                 <p className="text-[15px] sm:text-[18px] leading-[24px] sm:leading-[28px] text-gray-600 dark:text-gray-400 mb-4">
                   Um relatório personalizado que integra quatro sistemas para clareza, padrões e decisões melhores. Entrega imediata após o pagamento.

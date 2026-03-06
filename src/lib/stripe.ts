@@ -5,7 +5,7 @@ export const KIWIFY_CONFIG = {
   country: 'BR',
   productName: 'Astroglix — Mapa do destino',
   productDescription: 'Numerologia, Astrologia, Zodíaco Chinês e Astrocartografia',
-  price: 28.0
+  price: 35.9
 }
 
 /** Cria URL de checkout Kiwify com dados do cliente e URLs de retorno */
