@@ -402,7 +402,7 @@ const inspirationalQuotes = [
 ]
 
 const FAQ_ITEMS: { pergunta: string; resposta: string }[] = [
-  { pergunta: 'Isso é adivinhação?', resposta: 'Não. O Astroglix trabalha com Leitura estratégica , com base em cálculos e interpretação estruturada. O foco é clareza, padrões e decisões melhores — não promessas.' },
+  { pergunta: 'Isso é adivinhação?', resposta: 'Não. O Astroglix não é adivinhação. Ele é um mapa personalizado baseado nos seus dados de nascimento, que analisa ciclos, tendências e potenciais da sua vida. O objetivo não é prever o futuro, mas oferecer direcionamento e autoconhecimento para ajudar você a tomar decisões mais conscientes.' },
   { pergunta: 'Mapa natal e mapa astral são diferentes?', resposta: 'Na prática, são sinônimos. Ambos se referem ao mapa do céu no seu nascimento. Aqui a diferença é a qualidade da interpretação e a estrutura do relatório.' },
   { pergunta: 'Preciso saber a hora de nascimento?', resposta: 'Para a Análise Completa: a hora melhora muito (Ascendente e casas dependem da hora). Se não souber, entregamos uma versão essencial.' },
   { pergunta: 'Em quanto tempo eu recebo?', resposta: 'Análise Completa: acesso imediato após o pagamento. O relatório fica disponível na tela para visualizar e baixar quando quiser.' },
@@ -1581,15 +1581,15 @@ export default function MysticReportApp() {
           <>
             {/* Header */}
             <header className="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md rounded-b-2xl border-b border-x border-gray-200/50 dark:border-gray-700/50 mx-2 sm:mx-6 mt-2 sm:mt-3 overflow-visible">
-              <div className="max-w-5xl mx-auto pl-2 pr-2 sm:pl-3 sm:pr-4 py-1 sm:py-2 flex items-end justify-between gap-2 min-h-0 overflow-visible">
+              <div className="max-w-4xl mx-auto px-4 py-1 sm:py-2 flex items-end justify-center sm:justify-center gap-4 sm:gap-6 min-h-0 overflow-visible">
                 <Link
                   href="/"
-                  className="shrink-0 flex items-end -mb-10 sm:-mb-12 -ml-0.5 sm:-ml-1"
+                  className="shrink-0 flex items-end -mb-10 sm:-mb-12"
                   aria-label="Astroglix - início"
                 >
                   <Image src="/logo_astroglix2.png" alt="Astroglix" width={240} height={96} className="h-28 sm:h-32 w-auto object-contain object-left-bottom" />
                 </Link>
-                <nav className="flex items-center gap-1 sm:gap-2" aria-label="Menu principal">
+                <nav className="hidden sm:flex items-center gap-1 sm:gap-2" aria-label="Menu principal">
                   <a
                     href="#planos"
                     className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center px-3 sm:px-4 py-2.5 rounded-full text-[13px] sm:text-[15px] font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800/80 transition-colors"
@@ -1607,35 +1607,39 @@ export default function MysticReportApp() {
             </header>
 
             {/* Hero como na referência */}
-            <section className="max-w-4xl mx-auto px-3 sm:px-4 pt-14 sm:pt-16 pb-8 sm:pb-16 text-center">
-              <h1 className="text-2xl sm:text-3xl md:text-[36px] leading-tight sm:leading-[40px] font-bold mb-4 sm:mb-6 bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
+            <section className="max-w-4xl mx-auto px-4 sm:px-4 pt-14 sm:pt-16 pb-10 sm:pb-16 text-center">
+              <h1 className="text-2xl sm:text-3xl md:text-[36px] leading-tight sm:leading-[40px] font-bold mb-4 sm:mb-6 bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400 bg-clip-text text-transparent text-balance">
                 Seu mapa não determina o seu destino.<br />
                 Ele revela o manual de instruções da sua vida.
               </h1>
-              <p className="text-base sm:text-[18px] leading-relaxed sm:leading-[28px] text-gray-600 dark:text-gray-300 mb-6 sm:mb-8">
-                Unimos Numerologia, Astrologia Ocidental, Tradição Oriental (Vietnamita e Chinesa) e Astrocartografia para criar uma leitura profunda, estratégica e aplicável ao seu momento atual.
-              </p>
-              <div className="mb-6 sm:mb-8">
-                <p className="text-base sm:text-[18px] leading-relaxed sm:leading-[28px] font-semibold text-gray-800 dark:text-gray-200 mb-3 sm:mb-4">
-                  Não é previsão.<br />É direção.
-                </p>
-                <ul className="flex flex-wrap justify-center gap-x-4 sm:gap-x-6 gap-y-2 text-[13px] sm:text-[14px] leading-[22px] sm:leading-[28px] text-gray-600 dark:text-gray-400 list-none">
-                  <li>✨ Entenda seus ciclos</li>
-                  <li>✨ Descubra seus potenciais ocultos</li>
-                  <li>✨ Identifique os melhores movimentos</li>
-                  <li>✨ Tome decisões com consciência</li>
-                </ul>
+              <div className="relative mb-6 sm:mb-8 rounded-xl sm:rounded-2xl overflow-hidden shadow-xl border border-gray-200 dark:border-gray-700 aspect-video w-full max-w-2xl mx-auto bg-gray-100 dark:bg-gray-800 min-h-[200px] sm:min-h-0">
+                <iframe
+                  src="https://app.heygen.com/embeds/bbf30ede0f7c43368a201a3305578127"
+                  title="Astroglix site horizontal"
+                  allow="encrypted-media; fullscreen"
+                  allowFullScreen
+                  className="absolute inset-0 w-full h-full"
+                />
               </div>
-              <div className="flex flex-wrap justify-center gap-3 sm:gap-4">
+              <p className="text-base sm:text-[18px] leading-relaxed sm:leading-[28px] font-semibold text-gray-800 dark:text-gray-200 mb-3 sm:mb-4 text-balance">
+                Não é previsão.<br />É clareza de quem você é e pra onde pode ir.
+              </p>
+              <ul className="flex flex-col sm:flex-row sm:flex-wrap sm:justify-center gap-3 sm:gap-x-6 sm:gap-y-2 text-[14px] sm:text-[14px] leading-[22px] sm:leading-[28px] text-gray-600 dark:text-gray-400 list-none mb-6 sm:mb-8 text-left sm:text-center max-w-xs sm:max-w-none mx-auto">
+                <li className="flex items-center gap-2">✨ Entenda seus ciclos</li>
+                <li className="flex items-center gap-2">✨ Descubra seus potenciais ocultos</li>
+                <li className="flex items-center gap-2">✨ Identifique os melhores movimentos</li>
+                <li className="flex items-center gap-2">✨ Tome decisões com consciência</li>
+              </ul>
+              <div className="flex flex-col sm:flex-row justify-center items-stretch sm:items-center gap-3 sm:gap-4">
                 <a
                   href="#payment-form"
-                  className="min-h-[48px] inline-flex items-center justify-center px-6 sm:px-8 py-3.5 rounded-full font-normal text-[14px] leading-[20px] bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:opacity-90 transition-all hover:shadow-lg"
+                  className="min-h-[48px] sm:min-h-0 inline-flex items-center justify-center px-6 sm:px-8 py-3.5 rounded-full font-normal text-[14px] leading-[20px] bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:opacity-90 transition-all hover:shadow-lg active:scale-[0.98] touch-manipulation"
                 >
                   Gerar meu mapa
                 </a>
                 <a
                   href="#planos"
-                  className="min-h-[48px] inline-flex items-center justify-center px-6 sm:px-8 py-3.5 rounded-full font-normal text-[14px] leading-[20px] border-2 border-gray-900 dark:border-white text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-all hover:shadow-md"
+                  className="min-h-[48px] sm:min-h-0 inline-flex items-center justify-center px-6 sm:px-8 py-3.5 rounded-full font-normal text-[14px] leading-[20px] border-2 border-gray-900 dark:border-white text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-all hover:shadow-md active:scale-[0.98] touch-manipulation"
                 >
                   Ver planos
                 </a>
@@ -1643,7 +1647,7 @@ export default function MysticReportApp() {
             </section>
 
             {/* Quatro sistemas, uma leitura */}
-            <section className="max-w-4xl mx-auto px-3 sm:px-4 py-8 sm:py-16 border-t border-gray-200 dark:border-gray-700">
+            <section className="max-w-4xl mx-auto px-4 sm:px-4 py-8 sm:py-16 border-t border-gray-200 dark:border-gray-700">
               <h2 className="text-xl sm:text-[30px] leading-tight sm:leading-[36px] font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4">
                 Quatro sistemas, uma leitura
               </h2>

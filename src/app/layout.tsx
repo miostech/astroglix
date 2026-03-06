@@ -24,7 +24,7 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: "Astroglix — Leitura estratégica ",
-  description: "Numerologia, Astrologia Ocidental, Tradição Oriental e Astrocartografia. Seu mapa revela o manual de instruções da sua vida. Não é previsão. É direção.",
+  description: "Numerologia, Astrologia Ocidental, Tradição Oriental e Astrocartografia. Seu mapa revela o manual de instruções da sua vida. Não é previsão. É clareza de quem você é e pra onde pode ir.",
 };
 
 export default function RootLayout({
