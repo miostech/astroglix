@@ -1530,6 +1530,7 @@ export default function MysticReportApp() {
             </div>
           </button>
 
+          {/* Botão de teste — descomentar para usar em localhost
           <button
             type="button"
             onClick={handleTestReport}
@@ -1538,6 +1539,7 @@ export default function MysticReportApp() {
           >
             Ver relatório (teste — sem pagamento)
           </button>
+          */}
 
           <div className="text-center">
             <div className="flex items-center justify-center gap-2 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
