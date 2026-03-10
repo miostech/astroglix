@@ -1745,8 +1745,8 @@ export default function MysticReportApp() {
             {/* Hero como na referência */}
             <section className="max-w-4xl mx-auto px-4 sm:px-4 pt-14 sm:pt-16 pb-10 sm:pb-16 text-center">
               <h1 className="text-2xl sm:text-3xl md:text-[36px] leading-tight sm:leading-[40px] font-bold mb-4 sm:mb-6 bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400 bg-clip-text text-transparent text-balance">
-                Seu mapa não determina o seu destino.<br />
-                Ele revela o manual de instruções da sua vida.
+                Seu mapa revela<br />
+                o manual de instruções para sua vida.
               </h1>
               <div className="relative mb-6 sm:mb-8 rounded-xl sm:rounded-2xl overflow-hidden shadow-xl border border-gray-200 dark:border-gray-700 aspect-video w-full max-w-2xl mx-auto bg-gray-800 min-h-[200px] sm:min-h-0">
                 <video
