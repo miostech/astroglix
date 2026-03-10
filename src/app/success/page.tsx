@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation'
 import { CheckCircle, XCircle, ArrowLeft, BookOpen, Star, Download } from 'lucide-react'
 import Link from 'next/link'
 import DetailedReport from '@/components/DetailedReport'
+import { calculateLoveCompatibility } from '@/lib/love-compatibility'
 
 function SuccessPageContent() {
   const searchParams = useSearchParams()
@@ -473,19 +474,43 @@ function SuccessPageContent() {
       }
 
       if (result?.success && result.data) {
-        const { personalData } = result.data
+        const { personalData, planType } = result.data
+        const isLovePlan = planType === 'love_compatibility'
+
+        // Fallback: plano compatibilidade amorosa mas dados do parceiro não vieram do pedido (ex.: pedido antigo ou bug)
+        let partnerFullName = personalData.partnerFullName?.trim()
+        let partnerBirthDate = personalData.partnerBirthDate?.trim()
+        if (isLovePlan && (!partnerFullName || !partnerBirthDate) && typeof window !== 'undefined') {
+          const storedName = window.localStorage.getItem('last_partner_full_name')
+          const storedDate = window.localStorage.getItem('last_partner_birth_date')
+          if (storedName?.trim() && storedDate?.trim()) {
+            partnerFullName = partnerFullName || storedName.trim()
+            partnerBirthDate = partnerBirthDate || storedDate.trim()
+          }
+        }
 
         const numerology = calculateCompleteNumerology(personalData.fullName, personalData.birthDate)
         const astrology = calculateAstrology(personalData.birthDate, personalData.birthTime, personalData.birthPlace)
         const chineseZodiac = getChineseZodiac(personalData.birthDate)
         const astrocartography = calculateAstrocartography(personalData.fullName, personalData.birthDate, personalData.birthTime, personalData.birthPlace, personalData.currentCity)
 
+        let loveCompatibility = undefined
+        if (partnerFullName && partnerBirthDate) {
+          loveCompatibility = calculateLoveCompatibility(
+            personalData.birthDate,
+            personalData.fullName,
+            partnerBirthDate,
+            partnerFullName
+          )
+        }
+
         setReportData({
           personalData,
           numerology,
           astrology,
           chineseZodiac,
-          astrocartography
+          astrocartography,
+          ...(loveCompatibility && { loveCompatibility })
         })
       }
     } catch (error) {
@@ -605,7 +630,7 @@ function SuccessPageContent() {
           {/* Menu de Navegação Fixo no Topo */}
           <div className="fixed top-0 left-0 right-0 bg-white dark:bg-gray-800 shadow-lg z-50 no-print border-b-2 border-purple-200 dark:border-purple-800">
             <div className="container mx-auto px-4 py-3">
-              <div className="grid grid-cols-5 gap-2 sm:gap-3">
+              <div className={`grid gap-2 sm:gap-3 ${reportData.loveCompatibility ? 'grid-cols-3 sm:grid-cols-6' : 'grid-cols-5'}`}>
                 <a
                   href="#numerologia"
                   className="flex flex-col items-center gap-1 sm:gap-2 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/50 dark:to-pink-900/50 hover:from-purple-100 hover:to-pink-100 dark:hover:from-purple-800/50 dark:hover:to-pink-800/50 rounded-lg sm:rounded-xl p-2 sm:p-3 transition-all duration-300 border-2 border-transparent hover:border-purple-300 dark:hover:border-purple-600"
@@ -645,6 +670,16 @@ function SuccessPageContent() {
                   <span className="text-xl sm:text-2xl">✨</span>
                   <span className="text-[10px] sm:text-xs font-semibold text-gray-800 dark:text-gray-200 text-center">Horóscopo</span>
                 </a>
+
+                {reportData.loveCompatibility && (
+                  <a
+                    href="#compatibilidade"
+                    className="flex flex-col items-center gap-1 sm:gap-2 bg-gradient-to-br from-pink-50 to-rose-50 dark:from-pink-900/50 dark:to-rose-900/50 hover:from-pink-100 hover:to-rose-100 dark:hover:from-pink-800/50 dark:hover:to-rose-800/50 rounded-lg sm:rounded-xl p-2 sm:p-3 transition-all duration-300 border-2 border-transparent hover:border-pink-300 dark:hover:border-pink-600"
+                  >
+                    <span className="text-xl sm:text-2xl">❤️</span>
+                    <span className="text-[10px] sm:text-xs font-semibold text-gray-800 dark:text-gray-200 text-center">Compatibilidade</span>
+                  </a>
+                )}
               </div>
             </div>
           </div>

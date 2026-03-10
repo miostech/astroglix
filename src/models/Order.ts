@@ -67,6 +67,16 @@ const orderSchema = new mongoose.Schema(
       type: String,
       default: null,
       trim: true
+    },
+    partnerFullName: {
+      type: String,
+      default: null,
+      trim: true
+    },
+    partnerBirthDate: {
+      type: String,
+      default: null,
+      trim: true
     }
   },
   {
@@ -103,6 +113,8 @@ export type SavedDataShape = {
     birthTime: string
     birthPlace: string
     currentCity: string
+    partnerFullName?: string
+    partnerBirthDate?: string
   }
   timestamp: string
   planType: string
@@ -112,7 +124,7 @@ export type SavedDataShape = {
   kiwifyOrderId?: string
 }
 
-export function orderToSavedData(doc: OrderDocument & { createdAt?: Date }): SavedDataShape {
+export function orderToSavedData(doc: OrderDocument & { createdAt?: Date; partnerFullName?: string; partnerBirthDate?: string }): SavedDataShape {
   const createdAt = doc.createdAt instanceof Date ? doc.createdAt : new Date((doc as { createdAt: string }).createdAt)
   return {
     paymentId: doc.paymentId,
@@ -123,7 +135,9 @@ export function orderToSavedData(doc: OrderDocument & { createdAt?: Date }): Sav
       birthDate: doc.birthDate,
       birthTime: doc.birthTime ?? '',
       birthPlace: doc.birthPlace,
-      currentCity: doc.currentCity
+      currentCity: doc.currentCity,
+      ...(doc.partnerFullName != null && doc.partnerFullName !== '' && { partnerFullName: doc.partnerFullName }),
+      ...(doc.partnerBirthDate != null && doc.partnerBirthDate !== '' && { partnerBirthDate: doc.partnerBirthDate })
     },
     timestamp: createdAt.toISOString(),
     planType: doc.planType,

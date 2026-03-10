@@ -5,7 +5,8 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Country, State, City } from 'country-state-city'
 import { Calendar, Star, Calculator, Sparkles, Heart, Zap, Eye, Crown, CreditCard, Lock, CheckCircle, Moon, Sun, MapPin, Compass, BookOpen, Target, TrendingUp, Users, Brain, Shield, Award, Gem, Clock, Lightbulb, AlertCircle, ChevronDown, ChevronUp } from 'lucide-react'
-import { KIWIFY_CONFIG } from '@/lib/stripe'
+import { KIWIFY_PLANS, type PlanType } from '@/lib/stripe'
+import { calculateLoveCompatibility, type LoveCompatibilityResult } from '@/lib/love-compatibility'
 import DetailedReport from '@/components/DetailedReport'
 import iconNumerologia from '@/app/icon_numerologia.png'
 import iconAstrologia from '@/app/icon_astrologia.png'
@@ -19,6 +20,8 @@ interface PersonalData {
   birthTime: string
   birthPlace: string
   currentCity: string
+  partnerFullName?: string
+  partnerBirthDate?: string
 }
 
 interface NumerologyResult {
@@ -574,11 +577,13 @@ export default function MysticReportApp() {
     currentCity: ''
   })
   const [currentStep, setCurrentStep] = useState(1)
+  const [selectedPlan, setSelectedPlan] = useState<PlanType>('one_time')
   const [mysticReport, setMysticReport] = useState<{
     numerology: NumerologyResult
     astrology: AstrologyResult
     chineseZodiac: ChineseZodiac
     astrocartography: AstrocartographyResult
+    loveCompatibility?: LoveCompatibilityResult
   } | null>(null)
   const [isProcessingPayment, setIsProcessingPayment] = useState(false)
   const [paymentError, setPaymentError] = useState<string | null>(null)
@@ -1076,14 +1081,24 @@ export default function MysticReportApp() {
         throw new Error('Por favor, preencha a cidade de residência atual antes de continuar.')
       }
 
+      if (selectedPlan === 'love_compatibility') {
+        if (!personalData.partnerFullName?.trim()) {
+          throw new Error('Para o plano com compatibilidade amorosa, preencha o nome completo do(a) parceiro(a).')
+        }
+        if (!personalData.partnerBirthDate?.trim()) {
+          throw new Error('Para o plano com compatibilidade amorosa, preencha a data de nascimento do(a) parceiro(a).')
+        }
+      }
+
+      const planConfig = KIWIFY_PLANS[selectedPlan]
       const controller = new AbortController()
       const timeoutId = setTimeout(() => controller.abort(), 30000)
       const response = await fetch('/api/create-payment', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          planType: 'one_time',
-          amount: 35.9,
+          planType: selectedPlan,
+          amount: planConfig.price,
           currency: 'BRL',
           customerData: {
             name: personalData.fullName.trim(),
@@ -1095,7 +1110,11 @@ export default function MysticReportApp() {
             birthDate: personalData.birthDate,
             birthTime: personalData.birthTime ?? '',
             birthPlace: personalData.birthPlace.trim(),
-            currentCity: personalData.currentCity.trim()
+            currentCity: personalData.currentCity.trim(),
+            ...(selectedPlan === 'love_compatibility' && personalData.partnerFullName != null && personalData.partnerBirthDate != null && {
+              partnerFullName: personalData.partnerFullName.trim(),
+              partnerBirthDate: personalData.partnerBirthDate.trim()
+            })
           }
         }),
         signal: controller.signal
@@ -1115,6 +1134,10 @@ export default function MysticReportApp() {
         window.localStorage.setItem('last_payment_id', data.paymentId ?? '')
         window.localStorage.setItem('last_customer_name', personalData.fullName.trim())
         window.localStorage.setItem('last_customer_email', personalData.email.trim())
+        if (selectedPlan === 'love_compatibility' && personalData.partnerFullName?.trim() && personalData.partnerBirthDate?.trim()) {
+          window.localStorage.setItem('last_partner_full_name', personalData.partnerFullName.trim())
+          window.localStorage.setItem('last_partner_birth_date', personalData.partnerBirthDate.trim())
+        }
       }
 
       window.location.href = data.paymentUrl
@@ -1139,11 +1162,22 @@ export default function MysticReportApp() {
     const chineseZodiac = getChineseZodiac(personalData.birthDate)
     const astrocartography = calculateAstrocartography(personalData.fullName, personalData.birthDate, personalData.birthTime, personalData.birthPlace, personalData.currentCity)
 
+    let loveCompatibility: LoveCompatibilityResult | undefined
+    if (personalData.partnerFullName?.trim() && personalData.partnerBirthDate?.trim()) {
+      loveCompatibility = calculateLoveCompatibility(
+        personalData.birthDate,
+        personalData.fullName,
+        personalData.partnerBirthDate,
+        personalData.partnerFullName
+      )
+    }
+
     setMysticReport({
       numerology,
       astrology,
       chineseZodiac,
-      astrocartography
+      astrocartography,
+      ...(loveCompatibility && { loveCompatibility })
     })
 
     // Mudar para o passo 2 para mostrar o relatório
@@ -1169,6 +1203,45 @@ export default function MysticReportApp() {
     setCurrentStep(2)
   }
 
+  /** Gera e exibe o relatório sem passar pelo pagamento (uso interno/teste). */
+  const handleTestReport = () => {
+    if (!personalData.fullName.trim() || !personalData.birthDate) {
+      setPaymentError('Para testar, preencha pelo menos nome e data de nascimento.')
+      return
+    }
+    if (selectedPlan === 'love_compatibility' && (!personalData.partnerFullName?.trim() || !personalData.partnerBirthDate?.trim())) {
+      setPaymentError('No plano compatibilidade amorosa, preencha nome e data do(a) parceiro(a) para testar.')
+      return
+    }
+    setPaymentError(null)
+    const birthPlace = personalData.birthPlace.trim() || 'São Paulo, São Paulo, Brasil'
+    const currentCity = personalData.currentCity.trim() || 'São Paulo'
+
+    const numerology = calculateCompleteNumerology(personalData.fullName, personalData.birthDate)
+    const astrology = calculateAstrology(personalData.birthDate, personalData.birthTime, birthPlace)
+    const chineseZodiac = getChineseZodiac(personalData.birthDate)
+    const astrocartography = calculateAstrocartography(personalData.fullName, personalData.birthDate, personalData.birthTime ?? '', birthPlace, currentCity)
+
+    let loveCompatibility: LoveCompatibilityResult | undefined
+    if (personalData.partnerFullName?.trim() && personalData.partnerBirthDate?.trim()) {
+      loveCompatibility = calculateLoveCompatibility(
+        personalData.birthDate,
+        personalData.fullName,
+        personalData.partnerBirthDate,
+        personalData.partnerFullName
+      )
+    }
+
+    setMysticReport({
+      numerology,
+      astrology,
+      chineseZodiac,
+      astrocartography,
+      ...(loveCompatibility && { loveCompatibility })
+    })
+    setCurrentStep(2)
+  }
+
   const renderDataCollection = () => (
     <div id="payment-form" className="max-w-2xl mx-auto px-3 sm:px-4 animate-fade-in-up delay-500 scroll-mt-24">
       <div className="bg-white dark:bg-gray-800 rounded-3xl p-4 sm:p-8 shadow-xl border border-gray-100/80 dark:border-gray-700/80 relative overflow-hidden">
@@ -1184,37 +1257,49 @@ export default function MysticReportApp() {
             A precisão dos dados influencia diretamente na qualidade e profundidade da análise
           </p>
 
-          {/* Preço em destaque */}
-          <div className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/50 dark:to-pink-900/50 rounded-2xl p-4 sm:p-6 mb-6 border border-purple-100/50 dark:border-purple-800/30">
-            <div className="text-center">
-              <div className="flex flex-wrap items-center justify-center gap-2 mb-2">
-                <span className="text-base sm:text-lg text-gray-500 dark:text-gray-400 line-through">R$ 99,90</span>
-                <span className="text-2xl sm:text-3xl font-bold text-purple-600 dark:text-purple-400">R$ 35,90</span>
-              </div>
-              <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-                Análise Astrológica Completa - Pagamento único (valor promocional)
-              </p>
-              <div className="flex flex-wrap items-center justify-center gap-1 sm:gap-2 mt-3 text-xs text-gray-500 dark:text-gray-400">
-                <div className="flex items-center gap-1">
-                  <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 text-green-500" />
-                  <span>Numerologia</span>
+          {/* Escolha do plano */}
+          <div className="mb-6">
+            <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Escolha seu plano</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+              <button
+                type="button"
+                onClick={() => setSelectedPlan('one_time')}
+                className={`rounded-2xl p-4 sm:p-5 border-2 text-left transition-all ${
+                  selectedPlan === 'one_time'
+                    ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/30 dark:border-purple-400'
+                    : 'border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700/50 hover:border-purple-300 dark:hover:border-purple-600'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <span className="font-semibold text-gray-800 dark:text-gray-200">Relatório completo</span>
+                  {selectedPlan === 'one_time' && <CheckCircle className="w-5 h-5 text-purple-500 flex-shrink-0" />}
                 </div>
-                <span className="hidden sm:inline">•</span>
-                <div className="flex items-center gap-1">
-                  <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 text-green-500" />
-                  <span>Astrologia</span>
+                <p className="text-xl sm:text-2xl font-bold text-purple-600 dark:text-purple-400 mb-2">R$ 35,90</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400">
+                  Numerologia, Astrologia, Zodíaco Chinês e Astrocartografia
+                </p>
+              </button>
+              <button
+                type="button"
+                onClick={() => setSelectedPlan('love_compatibility')}
+                className={`rounded-2xl p-4 sm:p-5 border-2 text-left transition-all ${
+                  selectedPlan === 'love_compatibility'
+                    ? 'border-pink-500 bg-pink-50 dark:bg-pink-900/30 dark:border-pink-400'
+                    : 'border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700/50 hover:border-pink-300 dark:hover:border-pink-600'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <span className="font-semibold text-gray-800 dark:text-gray-200">+ Compatibilidade amorosa</span>
+                  {selectedPlan === 'love_compatibility' && <CheckCircle className="w-5 h-5 text-pink-500 flex-shrink-0" />}
                 </div>
-                <span className="hidden sm:inline">•</span>
-                <div className="flex items-center gap-1">
-                  <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 text-green-500" />
-                  <span>Zodíaco Chinês</span>
+                <div className="flex flex-wrap items-center gap-2 mb-2">
+                  <span className="text-base text-gray-500 dark:text-gray-400 line-through">De R$ 149,90</span>
+                  <span className="text-xl sm:text-2xl font-bold text-pink-600 dark:text-pink-400">R$ 49,90</span>
                 </div>
-                <span className="hidden sm:inline">•</span>
-                <div className="flex items-center gap-1">
-                  <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 text-green-500" />
-                  <span>Astrocartografia</span>
-                </div>
-              </div>
+                <p className="text-xs text-gray-600 dark:text-gray-400">
+                  Tudo do plano anterior + nome e data do parceiro(a) e bloco de compatibilidade no relatório
+                </p>
+              </button>
             </div>
           </div>
         </div>
@@ -1368,6 +1453,40 @@ export default function MysticReportApp() {
             </p>
           </div>
 
+          {selectedPlan === 'love_compatibility' && (
+            <>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Nome completo do(a) parceiro(a) *
+                </label>
+                <input
+                  type="text"
+                  value={personalData.partnerFullName ?? ''}
+                  onChange={(e) => setPersonalData(prev => ({ ...prev, partnerFullName: e.target.value }))}
+                  className="w-full px-4 sm:px-5 py-3 sm:py-3.5 border border-gray-200 dark:border-gray-600 rounded-2xl focus:ring-2 focus:ring-pink-400/50 focus:border-pink-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm sm:text-base transition-shadow focus:shadow-md"
+                  placeholder="Nome completo do(a) parceiro(a)"
+                />
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  Para gerar o bloco de compatibilidade amorosa no relatório
+                </p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Data de nascimento do(a) parceiro(a) *
+                </label>
+                <input
+                  type="date"
+                  value={personalData.partnerBirthDate ?? ''}
+                  onChange={(e) => setPersonalData(prev => ({ ...prev, partnerBirthDate: e.target.value }))}
+                  className="w-full px-4 sm:px-5 py-3 sm:py-3.5 border border-gray-200 dark:border-gray-600 rounded-2xl focus:ring-2 focus:ring-pink-400/50 focus:border-pink-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm sm:text-base transition-shadow focus:shadow-md"
+                />
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  Base para cálculo de signos e compatibilidade
+                </p>
+              </div>
+            </>
+          )}
+
           {/* Erro de pagamento */}
           {paymentError && (
             <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-2xl p-4">
@@ -1389,7 +1508,11 @@ export default function MysticReportApp() {
 
           <button
             onClick={handlePayment}
-            disabled={!personalData.fullName.trim() || !personalData.email.trim() || !personalData.birthDate || !personalData.birthPlace.trim() || !personalData.currentCity.trim() || isProcessingPayment}
+            disabled={
+              !personalData.fullName.trim() || !personalData.email.trim() || !personalData.birthDate ||
+              !personalData.birthPlace.trim() || !personalData.currentCity.trim() || isProcessingPayment ||
+              (selectedPlan === 'love_compatibility' && (!personalData.partnerFullName?.trim() || !personalData.partnerBirthDate?.trim()))
+            }
             className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3.5 sm:py-4 px-6 sm:px-8 rounded-full font-semibold text-base sm:text-lg hover:from-purple-700 hover:to-pink-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl disabled:hover:shadow-lg disabled:transform-none hover:scale-[1.02] active:scale-[0.98]"
           >
             <div className="flex items-center justify-center gap-2">
@@ -1405,6 +1528,15 @@ export default function MysticReportApp() {
                 </>
               )}
             </div>
+          </button>
+
+          <button
+            type="button"
+            onClick={handleTestReport}
+            disabled={!personalData.fullName.trim() || !personalData.birthDate || (selectedPlan === 'love_compatibility' && (!personalData.partnerFullName?.trim() || !personalData.partnerBirthDate?.trim()))}
+            className="w-full mt-3 py-3 px-6 rounded-full font-medium text-sm text-gray-600 dark:text-gray-400 border border-gray-300 dark:border-gray-600 bg-transparent hover:bg-gray-100 dark:hover:bg-gray-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Ver relatório (teste — sem pagamento)
           </button>
 
           <div className="text-center">
@@ -1433,7 +1565,8 @@ export default function MysticReportApp() {
       numerology: mysticReport.numerology,
       astrology: mysticReport.astrology,
       chineseZodiac: mysticReport.chineseZodiac,
-      astrocartography: mysticReport.astrocartography
+      astrocartography: mysticReport.astrocartography,
+      ...(mysticReport.loveCompatibility && { loveCompatibility: mysticReport.loveCompatibility })
     }
 
     return (
@@ -1705,41 +1838,81 @@ export default function MysticReportApp() {
               </div>
             </section>
 
-            {/* Plano (resumido — um produto principal) */}
+            {/* Planos — dois produtos */}
             <section id="planos" className="max-w-4xl mx-auto px-3 sm:px-4 py-8 sm:py-16 border-t border-gray-200 dark:border-gray-700 scroll-mt-20">
               <h2 className="text-xl sm:text-[30px] leading-tight sm:leading-[36px] font-semibold text-gray-900 dark:text-white mb-2">
-                Plano
+                Planos
               </h2>
               <p className="text-base sm:text-[18px] leading-relaxed sm:leading-[28px] text-gray-600 dark:text-gray-400 mb-6 sm:mb-8">
                 Escolha o nível de profundidade que faz sentido para você.
               </p>
-              <div className="bg-white dark:bg-gray-800 rounded-3xl p-4 sm:p-8 shadow-lg border border-gray-100/80 dark:border-gray-700/80">
-                <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-start sm:justify-between gap-3 sm:gap-4 mb-4">
-                  <div className="min-w-0">
-                    <h3 className="text-[15px] sm:text-[16px] leading-[22px] sm:leading-[24px] font-medium text-gray-900 dark:text-white">Análise Astrológica Completa</h3>
-                    <p className="text-[14px] sm:text-[18px] leading-[22px] sm:leading-[28px] text-gray-600 dark:text-gray-400 mt-1">Numerologia + Astrologia + Zodíaco Chinês + Astrocartografia</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                {/* Plano 1: Relatório completo */}
+                <div className="bg-white dark:bg-gray-800 rounded-3xl p-4 sm:p-6 shadow-lg border border-gray-100/80 dark:border-gray-700/80 flex flex-col">
+                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
+                    <div className="min-w-0">
+                      <h3 className="text-[15px] sm:text-[16px] leading-[22px] sm:leading-[24px] font-medium text-gray-900 dark:text-white">Análise Astrológica Completa</h3>
+                      <p className="text-[14px] sm:text-[18px] leading-[22px] sm:leading-[28px] text-gray-600 dark:text-gray-400 mt-1">Numerologia + Astrologia + Zodíaco Chinês + Astrocartografia</p>
+                    </div>
+                    <div className="shrink-0 flex flex-col sm:items-end gap-1">
+                      <span className="text-base text-gray-500 dark:text-gray-400 line-through">De R$ 99,90</span>
+                      <span className="text-2xl sm:text-[30px] leading-tight sm:leading-[36px] font-semibold text-gray-900 dark:text-white">R$ 35,90</span>
+                    </div>
                   </div>
-                  <div className="shrink-0 flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
-                    <span className="text-base text-gray-500 dark:text-gray-400 line-through">De R$ 99,90</span>
-                    <span className="text-2xl sm:text-[30px] leading-tight sm:leading-[36px] font-semibold text-gray-900 dark:text-white">R$ 35,90</span>
-                  </div>
+                  <p className="text-[15px] sm:text-[18px] leading-[24px] sm:leading-[28px] text-gray-600 dark:text-gray-400 mb-4">
+                    Relatório personalizado com quatro sistemas. Entrega imediata após o pagamento.
+                  </p>
+                  <ul className="space-y-2 text-[15px] sm:text-[18px] leading-[24px] sm:leading-[28px] text-gray-600 dark:text-gray-400 mb-6 flex-grow">
+                    <li>• Números essenciais (Caminho da Vida, Alma, Destino)</li>
+                    <li>• Mapa astral (Sol, Lua, Ascendente)</li>
+                    <li>• Zodíaco Chinês</li>
+                    <li>• Astrocartografia e locais de potência</li>
+                  </ul>
+                  <a
+                    href="#payment-form"
+                    onClick={() => setSelectedPlan('one_time')}
+                    className="min-h-[48px] inline-flex items-center justify-center w-full px-8 py-3.5 rounded-full font-normal text-[14px] leading-[20px] bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:opacity-90 transition-all hover:shadow-lg"
+                  >
+                    Gerar meu mapa
+                  </a>
+                  <p className="text-[13px] sm:text-[14px] leading-[20px] text-gray-500 dark:text-gray-500 mt-3">Pagamento seguro via Kiwify</p>
                 </div>
-                <p className="text-[15px] sm:text-[18px] leading-[24px] sm:leading-[28px] text-gray-600 dark:text-gray-400 mb-4">
-                  Um relatório personalizado que integra quatro sistemas para clareza, padrões e decisões melhores. Entrega imediata após o pagamento.
-                </p>
-                <ul className="space-y-2 text-[15px] sm:text-[18px] leading-[24px] sm:leading-[28px] text-gray-600 dark:text-gray-400 mb-6">
-                  <li>• Seus números essenciais (Caminho da Vida, Alma, Destino)</li>
-                  <li>• Mapa astral (Sol, Lua, Ascendente, planetas e casas)</li>
-                  <li>• Zodíaco Chinês e orientação oriental</li>
-                  <li>• Astrocartografia e locais de potência</li>
-                </ul>
-                <a
-                  href="#payment-form"
-                  className="min-h-[48px] inline-flex items-center justify-center w-full sm:w-auto px-8 py-3.5 rounded-full font-normal text-[14px] leading-[20px] bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:opacity-90 transition-all hover:shadow-lg"
-                >
-                  Gerar meu mapa
-                </a>
-                <p className="text-[13px] sm:text-[14px] leading-[20px] text-gray-500 dark:text-gray-500 mt-3">Pagamento seguro via Kiwify</p>
+
+                {/* Plano 2: + Compatibilidade amorosa */}
+                <div className="bg-white dark:bg-gray-800 rounded-3xl p-4 sm:p-6 shadow-lg border-2 border-pink-200 dark:border-pink-700/50 flex flex-col relative overflow-hidden">
+                  <div className="absolute top-3 right-3">
+                    <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-pink-100 dark:bg-pink-900/50 text-pink-700 dark:text-pink-300">+ Amor</span>
+                  </div>
+                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4 pr-16">
+                    <div className="min-w-0">
+                      <h3 className="text-[15px] sm:text-[16px] leading-[22px] sm:leading-[24px] font-medium text-gray-900 dark:text-white">Mapa + Compatibilidade Amorosa</h3>
+                      <p className="text-[14px] sm:text-[18px] leading-[22px] sm:leading-[28px] text-gray-600 dark:text-gray-400 mt-1">Tudo do plano anterior + análise a dois</p>
+                    </div>
+                    <div className="shrink-0 flex flex-col sm:items-end gap-1">
+                      <span className="text-base text-gray-500 dark:text-gray-400 line-through">De R$ 149,90</span>
+                      <span className="text-2xl sm:text-[30px] leading-tight sm:leading-[36px] font-semibold text-pink-600 dark:text-pink-400">R$ 49,90</span>
+                    </div>
+                  </div>
+                  <p className="text-[15px] sm:text-[18px] leading-[24px] sm:leading-[28px] text-gray-600 dark:text-gray-400 mb-4">
+                    Inclui nome e data de nascimento do(a) parceiro(a) e um bloco exclusivo de compatibilidade no relatório.
+                  </p>
+                  <ul className="space-y-2 text-[15px] sm:text-[18px] leading-[24px] sm:leading-[28px] text-gray-600 dark:text-gray-400 mb-6 flex-grow">
+                    <li>• Tudo do plano Análise Completa</li>
+                    <li>• Nome e data do(a) parceiro(a)</li>
+                    <li>• Bloco de compatibilidade amorosa (chinês + ocidental)</li>
+                  </ul>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedPlan('love_compatibility')
+                      document.getElementById('payment-form')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                    }}
+                    className="min-h-[48px] inline-flex items-center justify-center w-full px-8 py-3.5 rounded-full font-normal text-[14px] leading-[20px] bg-pink-600 dark:bg-pink-500 text-white hover:opacity-90 transition-all hover:shadow-lg"
+                  >
+                    Gerar mapa com compatibilidade
+                  </button>
+                  <p className="text-[13px] sm:text-[14px] leading-[20px] text-gray-500 dark:text-gray-500 mt-3">Pagamento seguro via Kiwify</p>
+                </div>
               </div>
             </section>
 
@@ -1858,6 +2031,18 @@ export default function MysticReportApp() {
                   <Sparkles className="w-5 h-5 sm:w-8 sm:h-8 text-yellow-600 dark:text-yellow-400 shrink-0" />
                   <span className="text-[11px] sm:text-base font-semibold text-gray-800 dark:text-gray-200 text-center leading-tight">Horóscopo</span>
                 </button>
+
+                {mysticReport?.loveCompatibility && (
+                  <button
+                    onClick={() => {
+                      document.getElementById('compatibilidade')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                    }}
+                    className="flex flex-col items-center gap-1.5 sm:gap-2 rounded-xl p-3 sm:p-6 transition-all duration-300 shadow-lg min-w-[88px] sm:min-w-[140px] min-h-[72px] sm:min-h-0 bg-white dark:bg-gray-800 hover:shadow-xl hover:bg-gradient-to-br hover:from-pink-50 hover:to-rose-50 dark:hover:from-pink-900/50 dark:hover:to-rose-900/50 cursor-pointer touch-manipulation"
+                  >
+                    <Heart className="w-5 h-5 sm:w-8 sm:h-8 text-pink-600 dark:text-pink-400 shrink-0" />
+                    <span className="text-[11px] sm:text-base font-semibold text-gray-800 dark:text-gray-200 text-center leading-tight">Compatibilidade</span>
+                  </button>
+                )}
               </div>
             </div>
           </div>

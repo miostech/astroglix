@@ -20,6 +20,7 @@ import {
   getPersonalDayMeaning
 } from '@/lib/numerology-contexts'
 import { getCurrentChineseYear, getYearImpact, getRelationshipColor } from '@/lib/chinese-zodiac-year'
+import type { LoveCompatibilityResult } from '@/lib/love-compatibility'
 import AstroMap from './AstroMap'
 
 interface DetailedReportProps {
@@ -36,6 +37,7 @@ interface DetailedReportProps {
     astrology: any
     chineseZodiac: any
     astrocartography: any
+    loveCompatibility?: LoveCompatibilityResult
   }
 }
 
@@ -435,7 +437,7 @@ Análise astrológica para o dia atual
 }
 
 export default function DetailedReport({ reportData }: DetailedReportProps) {
-  const { numerology, astrology, chineseZodiac, astrocartography } = reportData
+  const { numerology, astrology, chineseZodiac, astrocartography, loveCompatibility } = reportData
 
   // Interpretações de numerologia
   const lifePathInterp = getNumberInterpretation(numerology.lifePathNumber)
@@ -1408,10 +1410,134 @@ Orientações
       </div>
 
       {/* Seção 5: Horóscopo Diário */}
-      <div id="horoscope-section" className="bg-gradient-to-r from-yellow-50 to-amber-50 dark:from-yellow-900/30 dark:to-amber-900/30 rounded-2xl p-6 sm:p-8">
+      <div id="horoscope-section" className="bg-gradient-to-r from-yellow-50 to-amber-50 dark:from-yellow-900/30 dark:to-amber-900/30 rounded-2xl p-6 sm:p-8 scroll-mt-24">
         {/* Import do componente de horóscopo inline */}
         <HoroscopeInline personalData={reportData.personalData} />
       </div>
+
+      {/* ========== SEÇÃO 6: COMPATIBILIDADE AMOROSA ========== */}
+      {loveCompatibility && (
+        <div id="compatibilidade" className="bg-gradient-to-br from-pink-50 to-rose-50 dark:from-pink-900 dark:to-rose-900 rounded-3xl p-6 sm:p-10 shadow-2xl scroll-mt-24">
+          <div className="text-center mb-8">
+            <div className="w-20 h-20 flex items-center justify-center mx-auto mb-6 p-2.5">
+              <div className="w-full h-full rounded-full bg-gradient-to-br from-pink-500 to-rose-500 flex items-center justify-center">
+                <Heart className="w-10 h-10 text-white" />
+              </div>
+            </div>
+            <h2 className="text-4xl font-bold text-gray-800 dark:text-gray-100 mb-3">
+              6. Compatibilidade
+            </h2>
+            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+              Compatibilidade amorosa com {loveCompatibility.partnerFullName}
+            </p>
+          </div>
+
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-xl">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
+              <div className="bg-pink-50 dark:bg-pink-900/30 rounded-xl p-5">
+                <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Você</p>
+                <p className="font-bold text-lg text-gray-800 dark:text-gray-200 mb-1">
+                  {reportData.personalData.fullName}
+                </p>
+                <p className="text-sm text-gray-600 dark:text-gray-300">
+                  {loveCompatibility.userSignChinese} (ocidental: {loveCompatibility.userSignWestern})
+                </p>
+              </div>
+              <div className="bg-rose-50 dark:bg-rose-900/30 rounded-xl p-5">
+                <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Parceiro(a)</p>
+                <p className="font-bold text-lg text-gray-800 dark:text-gray-200 mb-1">
+                  {loveCompatibility.partnerFullName}
+                </p>
+                <p className="text-sm text-gray-600 dark:text-gray-300">
+                  {loveCompatibility.partnerSignChinese} (ocidental: {loveCompatibility.partnerSignWestern})
+                </p>
+              </div>
+            </div>
+            <div className={`rounded-xl p-6 mb-6 ${
+              loveCompatibility.level === 'high' ? 'bg-green-50 dark:bg-green-900/30 border-2 border-green-200 dark:border-green-700' :
+              loveCompatibility.level === 'medium' ? 'bg-amber-50 dark:bg-amber-900/30 border-2 border-amber-200 dark:border-amber-700' :
+              'bg-gray-50 dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-600'
+            }`}>
+              <p className="font-bold text-center text-xl mb-3">
+                {loveCompatibility.level === 'high' ? 'Alta compatibilidade' : loveCompatibility.level === 'medium' ? 'Compatibilidade moderada' : 'Compatibilidade com desafios'}
+              </p>
+              <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 text-center leading-relaxed">
+                {loveCompatibility.summary}
+              </p>
+            </div>
+            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 leading-relaxed mb-8">
+              {loveCompatibility.details}
+            </p>
+
+            {/* Compatibilidade por área: vida familiar, trabalho, sexo */}
+            <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-3">
+              <div className="bg-gradient-to-br from-violet-50 to-purple-50 dark:from-violet-900/30 dark:to-purple-900/30 rounded-2xl p-6 border-2 border-violet-200 dark:border-violet-700">
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="text-2xl">👨‍👩‍👧‍👦</span>
+                  <h4 className="text-lg font-bold text-violet-800 dark:text-violet-200">Vida familiar</h4>
+                </div>
+                <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 leading-relaxed">
+                  {loveCompatibility.familySummary}
+                </p>
+              </div>
+              <div className="bg-gradient-to-br from-sky-50 to-blue-50 dark:from-sky-900/30 dark:to-blue-900/30 rounded-2xl p-6 border-2 border-sky-200 dark:border-sky-700">
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="text-2xl">💼</span>
+                  <h4 className="text-lg font-bold text-sky-800 dark:text-sky-200">Trabalhos</h4>
+                </div>
+                <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 leading-relaxed">
+                  {loveCompatibility.workSummary}
+                </p>
+              </div>
+              <div className="bg-gradient-to-br from-rose-50 to-pink-50 dark:from-rose-900/30 dark:to-pink-900/30 rounded-2xl p-6 border-2 border-rose-200 dark:border-rose-700">
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="text-2xl">🔥</span>
+                  <h4 className="text-lg font-bold text-rose-800 dark:text-rose-200">Sexo</h4>
+                </div>
+                <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 leading-relaxed">
+                  {loveCompatibility.sexSummary}
+                </p>
+              </div>
+            </div>
+
+            {/* Ideias para fazerem juntos */}
+            <div className="mt-8 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-2xl p-6 sm:p-8 border-2 border-amber-200 dark:border-amber-700">
+              <div className="flex items-center gap-2 mb-4">
+                <span className="text-2xl">✨</span>
+                <h4 className="text-xl font-bold text-amber-800 dark:text-amber-200">Ideias de coisas para fazerem juntos</h4>
+              </div>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                Sugestões alinhadas ao perfil de {loveCompatibility.partnerFullName} (signo solar {loveCompatibility.partnerSignWestern}):
+              </p>
+              <ul className="space-y-2">
+                {(Array.isArray(loveCompatibility.activitiesTogether) ? loveCompatibility.activitiesTogether : [
+                  'Jantar a dois em um lugar especial',
+                  'Passeio ao ar livre ou em um lugar que vocês ainda não conhecem',
+                  'Noite em casa com filme, música ou jogo',
+                  'Fazer uma atividade nova juntos (curso, esporte, hobby)',
+                  'Planejar uma viagem ou um fim de semana surpresa'
+                ]).map((activity, idx) => (
+                  <li key={idx} className="flex items-start gap-2 text-gray-700 dark:text-gray-300">
+                    <span className="text-amber-500 dark:text-amber-400 mt-0.5">•</span>
+                    <span className="text-sm sm:text-base">{activity}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Tipos de surpresa que o(a) parceiro(a) gosta */}
+            <div className="mt-6 bg-gradient-to-br from-fuchsia-50 to-pink-50 dark:from-fuchsia-900/20 dark:to-pink-900/20 rounded-2xl p-6 sm:p-8 border-2 border-fuchsia-200 dark:border-fuchsia-700">
+              <div className="flex items-center gap-2 mb-4">
+                <span className="text-2xl">🎁</span>
+                <h4 className="text-xl font-bold text-fuchsia-800 dark:text-fuchsia-200">Tipos de surpresa que o(a) parceiro(a) gosta</h4>
+              </div>
+              <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 leading-relaxed">
+                {loveCompatibility.partnerSurprises ?? 'Cada pessoa tem suas preferências; observe os gestos que geram mais gratidão e alegria no dia a dia e use isso como guia para surpresas futuras.'}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
       </div>
     </div>
   )
