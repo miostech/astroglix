@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { buildCustomerReportSuccessUrl, resolveSiteOrigin } from '@/lib/customer-report-url'
 import { getOrderModel } from '@/models/Order'
 
 /**
@@ -49,12 +50,19 @@ export async function POST(request: NextRequest) {
         console.log('[WEBHOOK DEBUG] Email no banco:', existing.email, '| Status atual:', existing.paymentStatus)
       }
 
+      const siteOrigin = resolveSiteOrigin(request)
+      const customerReportUrl =
+        existing?.paymentId != null
+          ? buildCustomerReportSuccessUrl(siteOrigin, existing.paymentId, emailNormalized)
+          : undefined
+
       const updated = await Order.findOneAndUpdate(
         filter,
         {
           paymentStatus: 'approved',
           paymentConfirmedAt: new Date(),
-          kiwifyOrderId: orderId ?? undefined
+          kiwifyOrderId: orderId ?? undefined,
+          ...(customerReportUrl && { customerReportUrl })
         },
         { sort: { createdAt: -1 }, returnDocument: 'after' }
       )

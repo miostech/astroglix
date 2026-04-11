@@ -77,6 +77,12 @@ const orderSchema = new mongoose.Schema(
       type: String,
       default: null,
       trim: true
+    },
+    /** Link direto para reabrir o relatório (success + payment_id + email) */
+    customerReportUrl: {
+      type: String,
+      default: null,
+      trim: true
     }
   },
   {
@@ -122,6 +128,7 @@ export type SavedDataShape = {
   paymentStatus?: string
   paymentConfirmedAt?: string
   kiwifyOrderId?: string
+  customerReportUrl?: string
 }
 
 export function orderToSavedData(doc: OrderDocument & { createdAt?: Date; partnerFullName?: string; partnerBirthDate?: string }): SavedDataShape {
@@ -144,7 +151,8 @@ export function orderToSavedData(doc: OrderDocument & { createdAt?: Date; partne
     amount: doc.amount,
     ...(doc.paymentStatus && { paymentStatus: doc.paymentStatus }),
     ...(doc.paymentConfirmedAt && { paymentConfirmedAt: (doc.paymentConfirmedAt instanceof Date ? doc.paymentConfirmedAt : new Date(doc.paymentConfirmedAt)).toISOString() }),
-    ...(doc.kiwifyOrderId && { kiwifyOrderId: doc.kiwifyOrderId })
+    ...(doc.kiwifyOrderId && { kiwifyOrderId: doc.kiwifyOrderId }),
+    ...(doc.customerReportUrl && { customerReportUrl: doc.customerReportUrl })
   }
 }
 

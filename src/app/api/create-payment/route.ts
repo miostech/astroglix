@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { buildCustomerReportSuccessUrl, resolveSiteOrigin } from '@/lib/customer-report-url'
 import { createKiwifyPaymentUrl, KIWIFY_PLANS, type PlanType } from '@/lib/stripe'
 import { getOrderModel } from '@/models/Order'
 
@@ -39,8 +40,10 @@ export async function POST(request: NextRequest) {
     const paymentId = `kiwify_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
 
     const email = (customerData.email ?? '').trim().toLowerCase()
-    const successUrl = `${request.nextUrl.origin}/payment/redirect?payment_id=${paymentId}&email=${encodeURIComponent(email)}`
-    const cancelUrl = `${request.nextUrl.origin}/success?status=canceled&canceled=true`
+    const siteOrigin = resolveSiteOrigin(request)
+    let customerReportUrlForResponse: string | undefined
+    const successUrl = `${siteOrigin}/payment/redirect?payment_id=${paymentId}&email=${encodeURIComponent(email)}`
+    const cancelUrl = `${siteOrigin}/success?status=canceled&canceled=true`
 
     const partnerFullName = plan === 'love_compatibility' && personalData?.partnerFullName != null ? String(personalData.partnerFullName).trim() : null
     const partnerBirthDate = plan === 'love_compatibility' && personalData?.partnerBirthDate != null ? String(personalData.partnerBirthDate).trim() : null
@@ -48,10 +51,17 @@ export async function POST(request: NextRequest) {
     if (personalData) {
       try {
         const Order = await getOrderModel()
+        const orderEmail = (personalData.email ?? customerData.email).trim().toLowerCase()
+        const customerReportUrl = buildCustomerReportSuccessUrl(
+          siteOrigin,
+          paymentId,
+          orderEmail
+        )
+        customerReportUrlForResponse = customerReportUrl
         await Order.create({
           paymentId,
           fullName: personalData.fullName ?? customerData.name,
-          email: (personalData.email ?? customerData.email).trim().toLowerCase(),
+          email: orderEmail,
           birthDate: personalData.birthDate ?? '',
           birthTime: personalData.birthTime ?? '',
           birthPlace: personalData.birthPlace ?? '',
@@ -60,6 +70,7 @@ export async function POST(request: NextRequest) {
           amount,
           currency: currency ?? 'BRL',
           paymentStatus: 'pending',
+          customerReportUrl,
           ...(partnerFullName && partnerBirthDate && { partnerFullName, partnerBirthDate })
         })
         console.log('✅ Pedido salvo no MongoDB:', paymentId)
@@ -86,10 +97,12 @@ export async function POST(request: NextRequest) {
       paymentUrl,
       paymentId,
       paymentMethod: 'kiwify',
+      ...(customerReportUrlForResponse && { customerReportUrl: customerReportUrlForResponse }),
       data: {
         url: paymentUrl,
         paymentId,
         customerData: { name: customerData.name, email: customerData.email },
+        ...(customerReportUrlForResponse && { customerReportUrl: customerReportUrlForResponse }),
         product: {
           name: planConfig.productName,
           description: planConfig.productDescription,

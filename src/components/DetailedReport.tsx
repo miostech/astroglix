@@ -22,6 +22,12 @@ import {
 import { getCurrentChineseYear, getYearImpact, getRelationshipColor } from '@/lib/chinese-zodiac-year'
 import type { LoveCompatibilityResult } from '@/lib/love-compatibility'
 import AstroMap from './AstroMap'
+import { PdfWebViewHelpDialog } from '@/components/PdfWebViewHelpDialog'
+import {
+  isLikelyRestrictedInAppBrowser,
+  requestNativeDocumentPrint,
+  shouldUseNativeDocumentPrint,
+} from '@/lib/native-print'
 
 interface DetailedReportProps {
   reportData: {
@@ -464,13 +470,17 @@ export default function DetailedReport({ reportData }: DetailedReportProps) {
   const basicPdfRef = useRef<HTMLDivElement>(null)
   const [isPrinting, setIsPrinting] = useState(false)
   const [isPrintingBasic, setIsPrintingBasic] = useState(false)
+  const [inAppPdfHelpOpen, setInAppPdfHelpOpen] = useState(false)
 
   const documentTitle = `relatorio-astroglix-${reportData.personalData.fullName.replace(/\s+/g, '-').toLowerCase()}`
 
   const handlePrint = useReactToPrint({
     contentRef: reportRef,
     documentTitle,
-    onBeforePrint: async () => { setIsPrinting(true) },
+    onBeforePrint: () => {
+      setIsPrinting(true)
+      return Promise.resolve()
+    },
     onAfterPrint: () => setIsPrinting(false),
     pageStyle: `
       @page { size: A4; margin: 20mm; }
@@ -483,7 +493,10 @@ export default function DetailedReport({ reportData }: DetailedReportProps) {
   const handlePrintBasic = useReactToPrint({
     contentRef: basicPdfRef,
     documentTitle: `${documentTitle}-dados-basicos`,
-    onBeforePrint: async () => { setIsPrintingBasic(true) },
+    onBeforePrint: () => {
+      setIsPrintingBasic(true)
+      return Promise.resolve()
+    },
     onAfterPrint: () => setIsPrintingBasic(false),
     pageStyle: `
       @page { size: A4; margin: 20mm; }
@@ -493,13 +506,51 @@ export default function DetailedReport({ reportData }: DetailedReportProps) {
     `,
   })
 
+  const onPrintFullClick = () => {
+    if (isLikelyRestrictedInAppBrowser()) {
+      setInAppPdfHelpOpen(true)
+      return
+    }
+    if (shouldUseNativeDocumentPrint()) {
+      setIsPrinting(true)
+      requestNativeDocumentPrint({
+        documentTitle,
+        printMode: 'full',
+        onDialogClose: () => setIsPrinting(false),
+      })
+      return
+    }
+    handlePrint()
+  }
+
+  const onPrintBasicClick = () => {
+    if (isLikelyRestrictedInAppBrowser()) {
+      setInAppPdfHelpOpen(true)
+      return
+    }
+    if (shouldUseNativeDocumentPrint()) {
+      setIsPrintingBasic(true)
+      requestNativeDocumentPrint({
+        documentTitle: `${documentTitle}-dados-basicos`,
+        printMode: 'basic',
+        onDialogClose: () => setIsPrintingBasic(false),
+      })
+      return
+    }
+    handlePrintBasic()
+  }
+
   return (
     <div className="space-y-6 overflow-x-hidden">
+      <PdfWebViewHelpDialog
+        open={inAppPdfHelpOpen}
+        onOpenChange={setInAppPdfHelpOpen}
+      />
       {/* Barra de ação: Baixar PDF (oculta na impressão via @media print button) */}
       <div className="sticky top-2 sm:top-4 z-10 flex flex-col sm:flex-row justify-stretch sm:justify-end gap-2 sm:gap-3 px-0">
         <button
           type="button"
-          onClick={() => handlePrintBasic()}
+          onClick={onPrintBasicClick}
           disabled={isPrintingBasic}
           aria-label="PDF dados básicos"
           className="flex items-center justify-center gap-2 bg-gray-600 hover:bg-gray-700 text-white px-4 sm:px-5 py-3 sm:py-2.5 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed min-h-[48px] touch-manipulation opacity-0"
@@ -509,7 +560,7 @@ export default function DetailedReport({ reportData }: DetailedReportProps) {
         </button>
         <button
           type="button"
-          onClick={() => handlePrint()}
+          onClick={onPrintFullClick}
           disabled={isPrinting}
           className="flex items-center justify-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-4 sm:px-5 py-3 sm:py-2.5 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed min-h-[48px] touch-manipulation"
         >
@@ -521,7 +572,7 @@ export default function DetailedReport({ reportData }: DetailedReportProps) {
       {/* Conteúdo oculto só para PDF de dados básicos (sem explicações) */}
       <div
         ref={basicPdfRef}
-        className="absolute left-[-9999px] w-[210mm] bg-white p-8 print:left-0 print:relative print:block"
+        className="print-basic-only-root absolute left-[-9999px] w-[210mm] bg-white p-8 print:left-0 print:relative print:block"
         aria-hidden
       >
         <h1 className="text-2xl font-bold text-gray-800 mb-6">
@@ -535,7 +586,7 @@ export default function DetailedReport({ reportData }: DetailedReportProps) {
         </ul>
       </div>
 
-      <div ref={reportRef} className="space-y-6 sm:space-y-8 max-w-full">
+      <div ref={reportRef} className="print-full-report-root space-y-6 sm:space-y-8 max-w-full">
       {/* Visão geral do ano — debaixo dos botões, antes da numerologia */}
       <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur rounded-2xl p-5 sm:p-6 border border-purple-200/50 dark:border-purple-700/30 shadow-lg">
         <p className="text-base sm:text-xl text-gray-800 dark:text-gray-100 text-center font-medium">

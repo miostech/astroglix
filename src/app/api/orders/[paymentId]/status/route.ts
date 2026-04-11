@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { buildCustomerReportSuccessUrl, resolveSiteOrigin } from '@/lib/customer-report-url'
 import { getOrderModel } from '@/models/Order'
 
 export async function PATCH(
@@ -20,12 +21,20 @@ export async function PATCH(
     const kiwifyOrderId = body.kiwifyOrderId ?? undefined
 
     const Order = await getOrderModel()
+    const before = await Order.findOne({ paymentId }).lean().exec()
+    const siteOrigin = resolveSiteOrigin(_request)
+    const customerReportUrl =
+      before?.email && before.paymentId
+        ? buildCustomerReportSuccessUrl(siteOrigin, before.paymentId, before.email)
+        : undefined
+
     const doc = await Order.findOneAndUpdate(
       { paymentId },
       {
         paymentStatus,
         paymentConfirmedAt: paymentStatus === 'approved' ? new Date(paymentConfirmedAt) : null,
-        ...(kiwifyOrderId != null && { kiwifyOrderId })
+        ...(kiwifyOrderId != null && { kiwifyOrderId }),
+        ...(customerReportUrl && { customerReportUrl })
       },
       { returnDocument: 'after' }
     )

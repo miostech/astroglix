@@ -6,6 +6,11 @@ import { CheckCircle, XCircle, ArrowLeft, BookOpen, Star, Download } from 'lucid
 import Link from 'next/link'
 import DetailedReport from '@/components/DetailedReport'
 import { calculateLoveCompatibility } from '@/lib/love-compatibility'
+import { PdfWebViewHelpDialog } from '@/components/PdfWebViewHelpDialog'
+import {
+  isLikelyRestrictedInAppBrowser,
+  requestNativeDocumentPrint,
+} from '@/lib/native-print'
 
 function SuccessPageContent() {
   const searchParams = useSearchParams()
@@ -18,6 +23,7 @@ function SuccessPageContent() {
   const [reportData, setReportData] = useState<any>(null)
   const [isGeneratingReport, setIsGeneratingReport] = useState(false)
   const [isDownloadingPDF, setIsDownloadingPDF] = useState(false)
+  const [pdfWebViewHelpOpen, setPdfWebViewHelpOpen] = useState(false)
   const reportRef = useRef<HTMLDivElement>(null)
 
   // Função para gerar o relatório místico COMPLETO
@@ -525,19 +531,18 @@ function SuccessPageContent() {
       console.error('Dados não disponíveis')
       return
     }
-    
+
+    if (isLikelyRestrictedInAppBrowser()) {
+      setPdfWebViewHelpOpen(true)
+      return
+    }
+
     setIsDownloadingPDF(true)
-    
-    // Adicionar título ao documento antes de imprimir
-    const originalTitle = document.title
-    document.title = `Relatório Místico - ${reportData.personalData.fullName}`
-    
-    // Aguardar um pouco e abrir diálogo de impressão
-    setTimeout(() => {
-      window.print()
-      document.title = originalTitle
-      setIsDownloadingPDF(false)
-    }, 100)
+    requestNativeDocumentPrint({
+      documentTitle: `Relatório Místico - ${reportData.personalData.fullName}`,
+      printMode: 'full',
+      onDialogClose: () => setIsDownloadingPDF(false),
+    })
   }
 
   useEffect(() => {
@@ -627,6 +632,10 @@ function SuccessPageContent() {
     if (reportData) {
       return (
         <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-indigo-50 dark:from-gray-900 dark:via-purple-900 dark:to-indigo-900">
+          <PdfWebViewHelpDialog
+            open={pdfWebViewHelpOpen}
+            onOpenChange={setPdfWebViewHelpOpen}
+          />
           {/* Menu de Navegação Fixo no Topo */}
           <div className="fixed top-0 left-0 right-0 bg-white dark:bg-gray-800 shadow-lg z-50 no-print border-b-2 border-purple-200 dark:border-purple-800">
             <div className="container mx-auto px-4 py-3">

@@ -176,6 +176,15 @@
     background: white !important;
   }
 
+  /* window.print no documento: evita duplicar o bloco “dados básicos” (off-screen) */
+  html:not([data-print-mode='basic']) .print-basic-only-root {
+    display: none !important;
+  }
+
+  html[data-print-mode='basic'] .print-full-report-root {
+    display: none !important;
+  }
+
   .no-print {
     display: none !important;
   }
