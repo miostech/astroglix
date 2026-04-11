@@ -2,7 +2,7 @@
 export type PlanType = 'one_time' | 'love_compatibility'
 
 export const KIWIFY_CONFIG = {
-  checkoutUrl: 'https://pay.kiwify.com.br/UFB5v6k',
+  checkoutUrl: 'https://pay.kiwify.com.br/nJhkPe0',
   currency: 'BRL',
   country: 'BR',
   productName: 'Astroglix — Mapa do destino',
@@ -12,12 +12,12 @@ export const KIWIFY_CONFIG = {
 
 /** Plano com compatibilidade amorosa: segundo produto Kiwify */
 export const KIWIFY_LOVE_CONFIG = {
-  checkoutUrl: 'https://pay.kiwify.com.br/RO5XPJr',
+  checkoutUrl: 'https://pay.kiwify.com.br/74vtTMP',
   currency: 'BRL',
   country: 'BR',
   productName: 'Astroglix — Mapa do destino + Compatibilidade amorosa',
   productDescription: 'Numerologia, Astrologia, Zodíaco Chinês, Astrocartografia e Compatibilidade amorosa',
-  price: 49.9
+  price: 44.9
 }
 
 export const KIWIFY_PLANS: Record<PlanType, { checkoutUrl: string; price: number; productName: string; productDescription: string; currency: string }> = {

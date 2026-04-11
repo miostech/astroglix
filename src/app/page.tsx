@@ -1294,7 +1294,7 @@ export default function MysticReportApp() {
                 </div>
                 <div className="flex flex-wrap items-center gap-2 mb-2">
                   <span className="text-base text-gray-500 dark:text-gray-400 line-through">De R$ 149,90</span>
-                  <span className="text-xl sm:text-2xl font-bold text-pink-600 dark:text-pink-400">R$ 49,90</span>
+                  <span className="text-xl sm:text-2xl font-bold text-pink-600 dark:text-pink-400">R$ 44,90</span>
                 </div>
                 <p className="text-xs text-gray-600 dark:text-gray-400">
                   Tudo do plano anterior + nome e data do parceiro(a) e bloco de compatibilidade no relatório
@@ -1892,7 +1892,7 @@ export default function MysticReportApp() {
                     </div>
                     <div className="shrink-0 flex flex-col sm:items-end gap-1">
                       <span className="text-base text-gray-500 dark:text-gray-400 line-through">De R$ 149,90</span>
-                      <span className="text-2xl sm:text-[30px] leading-tight sm:leading-[36px] font-semibold text-pink-600 dark:text-pink-400">R$ 49,90</span>
+                      <span className="text-2xl sm:text-[30px] leading-tight sm:leading-[36px] font-semibold text-pink-600 dark:text-pink-400">R$ 44,90</span>
                     </div>
                   </div>
                   <p className="text-[15px] sm:text-[18px] leading-[24px] sm:leading-[28px] text-gray-600 dark:text-gray-400 mb-4">
