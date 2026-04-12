@@ -407,14 +407,15 @@ const inspirationalQuotes = [
 ]
 
 const FAQ_ITEMS: { pergunta: string; resposta: string }[] = [
-  { pergunta: 'Isso é adivinhação?', resposta: 'Não. O Astroglix não é adivinhação. Ele é um mapa personalizado baseado nos seus dados de nascimento, que analisa ciclos, tendências e potenciais da sua vida. O objetivo não é prever o futuro, mas oferecer direcionamento e autoconhecimento para ajudar você a tomar decisões mais conscientes.' },
+  // { pergunta: 'Isso é adivinhação?', resposta: 'Não. O Astroglix não é adivinhação. Ele é um mapa personalizado baseado nos seus dados de nascimento, que analisa ciclos, tendências e potenciais da sua vida. O objetivo não é prever o futuro, mas oferecer direcionamento e autoconhecimento para ajudar você a tomar decisões mais conscientes.' },
   { pergunta: 'Mapa natal e mapa astral são diferentes?', resposta: 'Na prática, são sinônimos. Ambos se referem ao mapa do céu no seu nascimento. Aqui a diferença é a qualidade da interpretação e a estrutura do relatório.' },
-  { pergunta: 'Os valores dos serviços aparecem no site?', resposta: 'Não publicamos tabela de preços aqui. Em cada serviço, use «Saiba mais» para abrir o WhatsApp com uma mensagem já identificando o serviço escolhido; combinamos valores e prazos no atendimento.' },
+  { pergunta: 'Os valores dos serviços aparecem no site?', resposta: 'Cada serviço tem um valor diferente. Use «Saiba mais» para abrir o WhatsApp com uma mensagem já identificando o serviço escolhido que informaremos valores e prazos no atendimento.' },
   { pergunta: 'Preciso saber a hora de nascimento?', resposta: 'Para o relatório online integrado: a hora melhora muito (Ascendente e casas dependem da hora). Se não souber, entregamos uma versão essencial. Para serviços sob medida, orientamos no contato.' },
-  { pergunta: 'Em quanto tempo eu recebo?', resposta: 'Combinamos prazo no WhatsApp conforme o serviço e a fila de atendimento.' },
-  { pergunta: 'Como vou receber?', resposta: 'A forma de entrega (PDF, áudio, reunião etc.) é alinhada no atendimento para cada serviço.' },
-  { pergunta: 'Meus dados estão seguros?', resposta: 'Sim. Coletamos apenas o necessário para gerar o relatório. Você pode solicitar exclusão a qualquer momento (LGPD).' },
-  { pergunta: 'Posso pedir reembolso?', resposta: 'Por ser produto digital e personalizado, o reembolso só é possível antes da geração do relatório. Após a entrega, não há reembolso. Consulte os Termos de uso para detalhes.' }
+  { pergunta: 'Em quanto tempo eu recebo?', resposta: 'O prazo varia conforme o serviço e a fila de atendimento. Normalmente de 1 a 10 dias, combinamos no WhatsApp.' },
+  { pergunta: 'Como vou receber?', resposta: 'A forma de entrega depende do serviço escolhido e é alinhada no atendimento, mas pode ser em PDF ou áudio.' },
+  { pergunta: 'Posso pedir reembolso?', resposta: 'Por ser produto digital e personalizado, o reembolso só é possível até 7 dias após a compra e antes da geração do relatório. Após a entrega, não há reembolso. Consulte os Termos de uso para detalhes.' },
+  { pergunta: 'Meus dados estão seguros?', resposta: 'Sim. Coletamos apenas o necessário para gerar o relatório. Você pode solicitar exclusão a qualquer momento (LGPD).' }
+  
 ]
 
 function LpFaq() {
@@ -2114,8 +2115,8 @@ export default function MysticReportApp() {
               </div>
               <div>
                 <p className="text-[15px] sm:text-[16px] leading-[22px] sm:leading-[24px] font-semibold text-gray-900 dark:text-white mb-3">Contato</p>
-                <a href="mailto:contato@astroglix.com.br" className="text-[14px] sm:text-[16px] leading-[22px] sm:leading-[24px] text-gray-600 dark:text-gray-400 hover:underline break-all">
-                  contato@astroglix.com.br
+                <a href="mailto:contato@astroglix.com" className="text-[14px] sm:text-[16px] leading-[22px] sm:leading-[24px] text-gray-600 dark:text-gray-400 hover:underline break-all">
+                  contato@astroglix.com
                 </a>
               </div>
             </div>
@@ -2184,7 +2185,7 @@ export default function MysticReportApp() {
                     value={mentoriaForm.phone}
                     onChange={(e) => setMentoriaForm((f) => ({ ...f, phone: e.target.value }))}
                     className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-purple-400/50 focus:border-purple-400"
-                    placeholder="(11) 99999-9999"
+                    placeholder="Ex: +55 (11) 99999-9999"
                   />
                 </div>
                 <div>

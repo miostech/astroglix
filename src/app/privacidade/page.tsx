@@ -112,8 +112,8 @@ export default function PrivacidadePage() {
             </ul>
             <p className="mt-3">
               Para exercer esses direitos, entre em contato pelo e-mail{' '}
-              <a href="mailto:contato@astroglix.com.br" className="text-purple-600 dark:text-purple-400 hover:underline">
-                contato@astroglix.com.br
+              <a href="mailto:contato@astroglix.com" className="text-purple-600 dark:text-purple-400 hover:underline">
+                contato@astroglix.com
               </a>.
             </p>
           </section>
@@ -139,8 +139,8 @@ export default function PrivacidadePage() {
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">10. Contato</h2>
             <p>
               Dúvidas ou solicitações sobre privacidade e dados pessoais:{' '}
-              <a href="mailto:contato@astroglix.com.br" className="text-purple-600 dark:text-purple-400 hover:underline">
-                contato@astroglix.com.br
+              <a href="mailto:contato@astroglix.com" className="text-purple-600 dark:text-purple-400 hover:underline">
+                contato@astroglix.com
               </a>.
             </p>
           </section>

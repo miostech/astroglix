@@ -78,8 +78,8 @@ export default function TermosPage() {
               Por se tratar de produto digital e personalizado, <strong>o reembolso só é possível antes da geração e entrega
               do relatório</strong>. Após a entrega do conteúdo, não há direito a reembolso. Em caso de dúvida sobre
               elegibilidade ao reembolso, entre em contato pelo e-mail{' '}
-              <a href="mailto:contato@astroglix.com.br" className="text-purple-600 dark:text-purple-400 hover:underline">
-                contato@astroglix.com.br
+              <a href="mailto:contato@astroglix.com" className="text-purple-600 dark:text-purple-400 hover:underline">
+                contato@astroglix.com
               </a>.
             </p>
           </section>
@@ -115,8 +115,8 @@ export default function TermosPage() {
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">9. Contato</h2>
             <p>
               Para questões sobre estes termos ou sobre os serviços, entre em contato:{' '}
-              <a href="mailto:contato@astroglix.com.br" className="text-purple-600 dark:text-purple-400 hover:underline">
-                contato@astroglix.com.br
+              <a href="mailto:contato@astroglix.com" className="text-purple-600 dark:text-purple-400 hover:underline">
+                contato@astroglix.com
               </a>.
             </p>
           </section>
