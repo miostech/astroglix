@@ -73,6 +73,22 @@ export const OFFERED_SERVICES: OfferedService[] = [
       'Olá! Quero saber mais sobre o serviço *Mapa Empresarial*.'
   },
   {
+    id: 'mapa-astrocartografico',
+    title: 'Mapa Astrocartográfico',
+    subtitle: 'Regiões do mundo que ressoam com seus objetivos.',
+    features: [
+      'Melhores lugares para morar, prosperar e se destacar',
+      'Amor & relacionamentos: onde flui e onde pesa',
+      'Carreira & dinheiro: linhas de sucesso e expansão',
+      'Saúde & equilíbrio: pontos de recarga e cura',
+      'Alertas: regiões de conflito, perdas e travas',
+      'Cidades recomendadas (top locais + por quê)'
+    ],
+    whatsappPrefill:
+      'Olá! Quero saber mais sobre o serviço *Mapa Astrocartográfico*.'
+  },
+
+  {
     id: 'mentoria',
     title: 'Mentoria',
     subtitle: 'Temas práticos de abundância, ambiente e padrões de vida.',
