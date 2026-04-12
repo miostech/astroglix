@@ -48,6 +48,12 @@ export default function PrivacidadePage() {
             <p className="mb-3">Podemos coletar os seguintes dados:</p>
             <ul className="list-disc pl-6 space-y-1">
               <li><strong>Dados de identificação:</strong> nome completo, e-mail.</li>
+              <li>
+                <strong>Lista de espera da Mentoria:</strong> quando você usa o formulário «Entrar na lista de espera» na
+                página inicial, coletamos nome completo, telefone e e-mail apenas para registrar seu interesse e
+                retornar o contato sobre vagas da mentoria. Esses registros são armazenados em nosso banco de dados
+                (MongoDB), em coleção própria de leads, separada dos pedidos de relatório.
+              </li>
               <li><strong>Dados para o relatório:</strong> data de nascimento, horário e local de nascimento, cidade atual e, no plano de compatibilidade amorosa, nome e data de nascimento do parceiro.</li>
               <li><strong>Dados de transação:</strong> informações de pagamento são processadas pela plataforma Kiwify; podemos receber identificadores de transação e status do pagamento para entrega do produto.</li>
               <li><strong>Dados técnicos:</strong> endereço IP, tipo de navegador, páginas visitadas e data/hora de acesso, quando necessário para o funcionamento e segurança do site.</li>
@@ -60,7 +66,9 @@ export default function PrivacidadePage() {
               Utilizamos seus dados para: (a) gerar e entregar o relatório personalizado; (b) processar o pagamento e
               confirmar a compra; (c) enviar comunicações relacionadas ao pedido e, quando autorizado, ofertas e
               novidades; (d) melhorar nossos serviços e a experiência no site; (e) cumprir obrigações legais e
-              regulatórias.
+              regulatórias; (f) em relação à lista de espera da Mentoria, registrar seu interesse e entrar em contato por
+              telefone, WhatsApp ou e-mail quando houver vaga ou informações relevantes, conforme os dados que você
+              informou no formulário.
             </p>
           </section>
 
@@ -68,7 +76,9 @@ export default function PrivacidadePage() {
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">4. Base legal (LGPD)</h2>
             <p>
               O tratamento dos dados está fundamentado na execução do contrato (entrega do relatório), no legítimo
-              interesse (melhoria dos serviços e segurança) e, quando aplicável, no seu consentimento (ex.: marketing).
+              interesse (melhoria dos serviços e segurança), no consentimento quando você envia voluntariamente o
+              formulário da lista de espera da Mentoria (ato consciente de fornecer dados para ser contatado) e, quando
+              aplicável, no seu consentimento para marketing.
             </p>
           </section>
 

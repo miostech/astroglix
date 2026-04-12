@@ -4,8 +4,10 @@ import { useState, useEffect, useMemo } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Country, State, City } from 'country-state-city'
-import { Calendar, Star, Calculator, Sparkles, Heart, Zap, Eye, Crown, CreditCard, Lock, CheckCircle, Moon, Sun, MapPin, Compass, BookOpen, Target, TrendingUp, Users, Brain, Shield, Award, Gem, Clock, Lightbulb, AlertCircle, ChevronDown, ChevronUp } from 'lucide-react'
+import { Calendar, Star, Calculator, Sparkles, Heart, Zap, Eye, Crown, CreditCard, Lock, CheckCircle, Moon, Sun, MapPin, Compass, BookOpen, Target, TrendingUp, Users, Brain, Shield, Award, Gem, Clock, Lightbulb, AlertCircle, ChevronDown, ChevronUp, MessageCircle, X, ListOrdered } from 'lucide-react'
 import { KIWIFY_PLANS, type PlanType } from '@/lib/stripe'
+import { OFFERED_SERVICES, isWaitlistService } from '@/lib/offered-services'
+import { buildWhatsAppServiceUrl } from '@/lib/whatsapp'
 import { calculateLoveCompatibility, type LoveCompatibilityResult } from '@/lib/love-compatibility'
 import DetailedReport from '@/components/DetailedReport'
 import iconNumerologia from '@/app/icon_numerologia.png'
@@ -407,9 +409,10 @@ const inspirationalQuotes = [
 const FAQ_ITEMS: { pergunta: string; resposta: string }[] = [
   { pergunta: 'Isso é adivinhação?', resposta: 'Não. O Astroglix não é adivinhação. Ele é um mapa personalizado baseado nos seus dados de nascimento, que analisa ciclos, tendências e potenciais da sua vida. O objetivo não é prever o futuro, mas oferecer direcionamento e autoconhecimento para ajudar você a tomar decisões mais conscientes.' },
   { pergunta: 'Mapa natal e mapa astral são diferentes?', resposta: 'Na prática, são sinônimos. Ambos se referem ao mapa do céu no seu nascimento. Aqui a diferença é a qualidade da interpretação e a estrutura do relatório.' },
-  { pergunta: 'Preciso saber a hora de nascimento?', resposta: 'Para a Análise Completa: a hora melhora muito (Ascendente e casas dependem da hora). Se não souber, entregamos uma versão essencial.' },
-  { pergunta: 'Em quanto tempo eu recebo?', resposta: 'Análise Completa: acesso imediato após o pagamento. O relatório fica disponível na tela para visualizar e baixar quando quiser.' },
-  { pergunta: 'Como vou receber?', resposta: 'Você visualiza o relatório na própria página após preencher os dados e concluir o pagamento. Pode baixar em PDF quando quiser.' },
+  { pergunta: 'Os valores dos serviços aparecem no site?', resposta: 'Não publicamos tabela de preços aqui. Em cada serviço, use «Saiba mais» para abrir o WhatsApp com uma mensagem já identificando o serviço escolhido; combinamos valores e prazos no atendimento.' },
+  { pergunta: 'Preciso saber a hora de nascimento?', resposta: 'Para o relatório online integrado: a hora melhora muito (Ascendente e casas dependem da hora). Se não souber, entregamos uma versão essencial. Para serviços sob medida, orientamos no contato.' },
+  { pergunta: 'Em quanto tempo eu recebo?', resposta: 'Combinamos prazo no WhatsApp conforme o serviço e a fila de atendimento.' },
+  { pergunta: 'Como vou receber?', resposta: 'A forma de entrega (PDF, áudio, reunião etc.) é alinhada no atendimento para cada serviço.' },
   { pergunta: 'Meus dados estão seguros?', resposta: 'Sim. Coletamos apenas o necessário para gerar o relatório. Você pode solicitar exclusão a qualquer momento (LGPD).' },
   { pergunta: 'Posso pedir reembolso?', resposta: 'Por ser produto digital e personalizado, o reembolso só é possível antes da geração do relatório. Após a entrega, não há reembolso. Consulte os Termos de uso para detalhes.' }
 ]
@@ -567,6 +570,12 @@ const astrologySigns = {
   }
 }
 
+/**
+ * Formulário de dados + checkout Kiwify na home.
+ * Por padrão fica oculto; para reativar, defina `NEXT_PUBLIC_SHOW_PAYMENT_FORM=true` no ambiente (build).
+ */
+const PAYMENT_FORM_ENABLED = process.env.NEXT_PUBLIC_SHOW_PAYMENT_FORM === 'true'
+
 export default function MysticReportApp() {
   const [personalData, setPersonalData] = useState<PersonalData>({
     fullName: '',
@@ -591,6 +600,11 @@ export default function MysticReportApp() {
   const [birthCountryCode, setBirthCountryCode] = useState('')
   const [birthStateCode, setBirthStateCode] = useState('')
   const [birthCityName, setBirthCityName] = useState('')
+  const [mentoriaWaitlistOpen, setMentoriaWaitlistOpen] = useState(false)
+  const [mentoriaForm, setMentoriaForm] = useState({ fullName: '', phone: '', email: '' })
+  const [mentoriaSubmitting, setMentoriaSubmitting] = useState(false)
+  const [mentoriaFormError, setMentoriaFormError] = useState<string | null>(null)
+  const [mentoriaFormSuccess, setMentoriaFormSuccess] = useState(false)
 
   const countries = useMemo(() => {
     const list = Country.getAllCountries()
@@ -1242,7 +1256,52 @@ export default function MysticReportApp() {
     setCurrentStep(2)
   }
 
-  const renderDataCollection = () => (
+  const openMentoriaWaitlist = () => {
+    setMentoriaFormError(null)
+    setMentoriaFormSuccess(false)
+    setMentoriaWaitlistOpen(true)
+  }
+
+  const closeMentoriaWaitlist = () => {
+    setMentoriaWaitlistOpen(false)
+    setMentoriaFormError(null)
+    setMentoriaSubmitting(false)
+  }
+
+  const submitMentoriaWaitlist = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setMentoriaFormError(null)
+    setMentoriaFormSuccess(false)
+    setMentoriaSubmitting(true)
+    try {
+      const res = await fetch('/api/mentoria-waitlist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fullName: mentoriaForm.fullName.trim(),
+          phone: mentoriaForm.phone.trim(),
+          email: mentoriaForm.email.trim()
+        })
+      })
+      const data = (await res.json()) as { success?: boolean; error?: string }
+      if (!res.ok || !data.success) {
+        setMentoriaFormError(data.error ?? 'Não foi possível enviar. Tente novamente.')
+        return
+      }
+      setMentoriaFormSuccess(true)
+      setMentoriaForm({ fullName: '', phone: '', email: '' })
+    } catch {
+      setMentoriaFormError('Erro de conexão. Verifique a internet e tente de novo.')
+    } finally {
+      setMentoriaSubmitting(false)
+    }
+  }
+
+  const renderDataCollection = () => {
+    if (!PAYMENT_FORM_ENABLED) {
+      return null
+    }
+    return (
     <div id="payment-form" className="max-w-2xl mx-auto px-3 sm:px-4 animate-fade-in-up delay-500 scroll-mt-24">
       <div className="bg-white dark:bg-gray-800 rounded-3xl p-4 sm:p-8 shadow-xl border border-gray-100/80 dark:border-gray-700/80 relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 via-pink-500 to-purple-500 animate-shimmer rounded-t-3xl"></div>
@@ -1257,9 +1316,9 @@ export default function MysticReportApp() {
             A precisão dos dados influencia diretamente na qualidade e profundidade da análise
           </p>
 
-          {/* Escolha do plano */}
+          {/* Opção do relatório online (checkout) */}
           <div className="mb-6">
-            <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Escolha seu plano</p>
+            <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Relatório online integrado</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <button
                 type="button"
@@ -1271,12 +1330,12 @@ export default function MysticReportApp() {
                 }`}
               >
                 <div className="flex items-center justify-between mb-2">
-                  <span className="font-semibold text-gray-800 dark:text-gray-200">Relatório completo</span>
+                  <span className="font-semibold text-gray-800 dark:text-gray-200">Análise 4 em 1</span>
                   {selectedPlan === 'one_time' && <CheckCircle className="w-5 h-5 text-purple-500 flex-shrink-0" />}
                 </div>
-                <p className="text-xl sm:text-2xl font-bold text-purple-600 dark:text-purple-400 mb-2">R$ 35,90</p>
+                <p className="text-sm font-medium text-purple-600 dark:text-purple-400 mb-2">Numerologia, astrologia, zodíaco chinês e astrocartografia</p>
                 <p className="text-xs text-gray-600 dark:text-gray-400">
-                  Numerologia, Astrologia, Zodíaco Chinês e Astrocartografia
+                  Um relatório automatizado na hora, após o pagamento seguro.
                 </p>
               </button>
               <button
@@ -1289,15 +1348,12 @@ export default function MysticReportApp() {
                 }`}
               >
                 <div className="flex items-center justify-between mb-2">
-                  <span className="font-semibold text-gray-800 dark:text-gray-200">+ Compatibilidade amorosa</span>
+                  <span className="font-semibold text-gray-800 dark:text-gray-200">+ Compatibilidade no relatório</span>
                   {selectedPlan === 'love_compatibility' && <CheckCircle className="w-5 h-5 text-pink-500 flex-shrink-0" />}
                 </div>
-                <div className="flex flex-wrap items-center gap-2 mb-2">
-                  <span className="text-base text-gray-500 dark:text-gray-400 line-through">De R$ 149,90</span>
-                  <span className="text-xl sm:text-2xl font-bold text-pink-600 dark:text-pink-400">R$ 44,90</span>
-                </div>
+                <p className="text-sm font-medium text-pink-600 dark:text-pink-400 mb-2">Tudo da opção anterior</p>
                 <p className="text-xs text-gray-600 dark:text-gray-400">
-                  Tudo do plano anterior + nome e data do parceiro(a) e bloco de compatibilidade no relatório
+                  Inclui nome e data do(a) parceiro(a) e um bloco extra de compatibilidade no mesmo relatório online.
                 </p>
               </button>
             </div>
@@ -1550,7 +1606,8 @@ export default function MysticReportApp() {
         </div>
       </div>
     </div>
-  )
+    )
+  }
 
   const renderMysticReport = () => {
     if (!mysticReport) return null
@@ -1727,16 +1784,16 @@ export default function MysticReportApp() {
                 </Link>
                 <nav className="hidden sm:flex items-center gap-1 sm:gap-2" aria-label="Menu principal">
                   <a
-                    href="#planos"
+                    href="#servicos"
                     className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center px-3 sm:px-4 py-2.5 rounded-full text-[13px] sm:text-[15px] font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800/80 transition-colors"
                   >
-                    Plano
+                    Serviços
                   </a>
                   <a
-                    href="#payment-form"
+                    href="#como-funciona"
                     className="min-h-[44px] inline-flex items-center justify-center px-3 sm:px-4 py-2.5 rounded-full text-[13px] sm:text-[15px] font-medium bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:opacity-90 transition-opacity"
                   >
-                    Gerar mapa
+                    Como funciona
                   </a>
                 </nav>
               </div>
@@ -1773,16 +1830,16 @@ export default function MysticReportApp() {
               </ul>
               <div className="flex flex-col sm:flex-row justify-center items-stretch sm:items-center gap-3 sm:gap-4">
                 <a
-                  href="#payment-form"
+                  href="#servicos"
                   className="min-h-[48px] sm:min-h-0 inline-flex items-center justify-center px-6 sm:px-8 py-3.5 rounded-full font-normal text-[14px] leading-[20px] bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:opacity-90 transition-all hover:shadow-lg active:scale-[0.98] touch-manipulation"
                 >
-                  Gerar meu mapa
+                  Ver serviços
                 </a>
                 <a
-                  href="#planos"
+                  href="#como-funciona"
                   className="min-h-[48px] sm:min-h-0 inline-flex items-center justify-center px-6 sm:px-8 py-3.5 rounded-full font-normal text-[14px] leading-[20px] border-2 border-gray-900 dark:border-white text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-all hover:shadow-md active:scale-[0.98] touch-manipulation"
                 >
-                  Ver planos
+                  Como funciona
                 </a>
               </div>
             </section>
@@ -1840,95 +1897,70 @@ export default function MysticReportApp() {
               </div>
             </section>
 
-            {/* Planos — dois produtos */}
-            <section id="planos" className="max-w-4xl mx-auto px-3 sm:px-4 py-8 sm:py-16 border-t border-gray-200 dark:border-gray-700 scroll-mt-20">
+            {/* Serviços — contato WhatsApp */}
+            <section id="servicos" className="max-w-4xl mx-auto px-3 sm:px-4 py-8 sm:py-16 border-t border-gray-200 dark:border-gray-700 scroll-mt-20">
               <h2 className="text-xl sm:text-[30px] leading-tight sm:leading-[36px] font-semibold text-gray-900 dark:text-white mb-2">
-                Planos
+                Serviços
               </h2>
               <p className="text-base sm:text-[18px] leading-relaxed sm:leading-[28px] text-gray-600 dark:text-gray-400 mb-6 sm:mb-8">
-                Escolha o nível de profundidade que faz sentido para você.
+                Valores e prazos combinamos no atendimento. Use «Saiba mais» para falar no WhatsApp com o serviço já identificado na mensagem. Na Mentoria, as vagas podem estar esgotadas: use «Entrar na lista de espera» para deixar seus dados.
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-                {/* Plano 1: Relatório completo */}
-                <div className="bg-white dark:bg-gray-800 rounded-3xl p-4 sm:p-6 shadow-lg border border-gray-100/80 dark:border-gray-700/80 flex flex-col">
-                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
-                    <div className="min-w-0">
-                      <h3 className="text-[15px] sm:text-[16px] leading-[22px] sm:leading-[24px] font-medium text-gray-900 dark:text-white">Análise Astrológica Completa</h3>
-                      <p className="text-[14px] sm:text-[18px] leading-[22px] sm:leading-[28px] text-gray-600 dark:text-gray-400 mt-1">Numerologia + Astrologia + Zodíaco Chinês + Astrocartografia</p>
-                    </div>
-                    <div className="shrink-0 flex flex-col sm:items-end gap-1">
-                      <span className="text-base text-gray-500 dark:text-gray-400 line-through">De R$ 99,90</span>
-                      <span className="text-2xl sm:text-[30px] leading-tight sm:leading-[36px] font-semibold text-gray-900 dark:text-white">R$ 35,90</span>
-                    </div>
-                  </div>
-                  <p className="text-[15px] sm:text-[18px] leading-[24px] sm:leading-[28px] text-gray-600 dark:text-gray-400 mb-4">
-                    Relatório personalizado com quatro sistemas. Entrega imediata após o pagamento.
-                  </p>
-                  <ul className="space-y-2 text-[15px] sm:text-[18px] leading-[24px] sm:leading-[28px] text-gray-600 dark:text-gray-400 mb-6 flex-grow">
-                    <li>• Números essenciais (Caminho da Vida, Alma, Destino)</li>
-                    <li>• Mapa astral (Sol, Lua, Ascendente)</li>
-                    <li>• Zodíaco Chinês</li>
-                    <li>• Astrocartografia e locais de potência</li>
-                  </ul>
-                  <a
-                    href="#payment-form"
-                    onClick={() => setSelectedPlan('one_time')}
-                    className="min-h-[48px] inline-flex items-center justify-center w-full px-8 py-3.5 rounded-full font-normal text-[14px] leading-[20px] bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:opacity-90 transition-all hover:shadow-lg"
+                {OFFERED_SERVICES.map((service) => (
+                  <div
+                    key={service.id}
+                    className="bg-white dark:bg-gray-800 rounded-3xl p-4 sm:p-6 shadow-lg border border-gray-100/80 dark:border-gray-700/80 flex flex-col"
                   >
-                    Gerar meu mapa
-                  </a>
-                  <p className="text-[13px] sm:text-[14px] leading-[20px] text-gray-500 dark:text-gray-500 mt-3">Pagamento seguro via Kiwify</p>
-                </div>
-
-                {/* Plano 2: + Compatibilidade amorosa */}
-                <div className="bg-white dark:bg-gray-800 rounded-3xl p-4 sm:p-6 shadow-lg border-2 border-pink-200 dark:border-pink-700/50 flex flex-col relative overflow-hidden">
-                  <div className="absolute top-3 right-3">
-                    <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-pink-100 dark:bg-pink-900/50 text-pink-700 dark:text-pink-300">+ Amor</span>
+                    <h3 className="text-[15px] sm:text-[17px] leading-snug font-semibold text-gray-900 dark:text-white mb-1">
+                      {service.title}
+                    </h3>
+                    <p className="text-[13px] sm:text-[15px] text-gray-500 dark:text-gray-400 mb-4">
+                      {service.subtitle}
+                    </p>
+                    <ul className="space-y-2 text-[14px] sm:text-[16px] leading-[22px] sm:leading-[26px] text-gray-600 dark:text-gray-400 mb-6 flex-grow list-none">
+                      {service.features.map((line) => (
+                        <li key={line} className="flex gap-2">
+                          <span className="text-green-600 dark:text-green-400 flex-shrink-0" aria-hidden>✅</span>
+                          <span>{line}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    {isWaitlistService(service) ? (
+                      <button
+                        type="button"
+                        onClick={openMentoriaWaitlist}
+                        className="min-h-[48px] inline-flex items-center justify-center gap-2 w-full px-8 py-3.5 rounded-full font-medium text-[14px] leading-[20px] bg-gradient-to-r from-violet-600 to-purple-600 text-white hover:opacity-90 transition-all hover:shadow-lg"
+                      >
+                        <ListOrdered className="w-5 h-5 flex-shrink-0" aria-hidden />
+                        Entrar na lista de espera
+                      </button>
+                    ) : (
+                      <a
+                        href={buildWhatsAppServiceUrl(service.whatsappPrefill)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="min-h-[48px] inline-flex items-center justify-center gap-2 w-full px-8 py-3.5 rounded-full font-medium text-[14px] leading-[20px] bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:opacity-90 transition-all hover:shadow-lg"
+                      >
+                        <MessageCircle className="w-5 h-5 flex-shrink-0" aria-hidden />
+                        Saiba mais
+                      </a>
+                    )}
                   </div>
-                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4 pr-16">
-                    <div className="min-w-0">
-                      <h3 className="text-[15px] sm:text-[16px] leading-[22px] sm:leading-[24px] font-medium text-gray-900 dark:text-white">Mapa + Compatibilidade Amorosa</h3>
-                      <p className="text-[14px] sm:text-[18px] leading-[22px] sm:leading-[28px] text-gray-600 dark:text-gray-400 mt-1">Tudo do plano anterior + análise a dois</p>
-                    </div>
-                    <div className="shrink-0 flex flex-col sm:items-end gap-1">
-                      <span className="text-base text-gray-500 dark:text-gray-400 line-through">De R$ 149,90</span>
-                      <span className="text-2xl sm:text-[30px] leading-tight sm:leading-[36px] font-semibold text-pink-600 dark:text-pink-400">R$ 44,90</span>
-                    </div>
-                  </div>
-                  <p className="text-[15px] sm:text-[18px] leading-[24px] sm:leading-[28px] text-gray-600 dark:text-gray-400 mb-4">
-                    Inclui nome e data de nascimento do(a) parceiro(a) e um bloco exclusivo de compatibilidade no relatório.
-                  </p>
-                  <ul className="space-y-2 text-[15px] sm:text-[18px] leading-[24px] sm:leading-[28px] text-gray-600 dark:text-gray-400 mb-6 flex-grow">
-                    <li>• Tudo do plano Análise Completa</li>
-                    <li>• Nome e data do(a) parceiro(a)</li>
-                    <li>• Bloco de compatibilidade amorosa (chinês + ocidental)</li>
-                  </ul>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSelectedPlan('love_compatibility')
-                      document.getElementById('payment-form')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-                    }}
-                    className="min-h-[48px] inline-flex items-center justify-center w-full px-8 py-3.5 rounded-full font-normal text-[14px] leading-[20px] bg-pink-600 dark:bg-pink-500 text-white hover:opacity-90 transition-all hover:shadow-lg"
-                  >
-                    Gerar mapa com compatibilidade
-                  </button>
-                  <p className="text-[13px] sm:text-[14px] leading-[20px] text-gray-500 dark:text-gray-500 mt-3">Pagamento seguro via Kiwify</p>
-                </div>
+                ))}
               </div>
             </section>
 
             {/* Como funciona */}
-            <section className="max-w-4xl mx-auto px-3 sm:px-4 py-8 sm:py-16 border-t border-gray-200 dark:border-gray-700">
+            <section id="como-funciona" className="max-w-4xl mx-auto px-3 sm:px-4 py-8 sm:py-16 border-t border-gray-200 dark:border-gray-700 scroll-mt-20">
               <h2 className="text-xl sm:text-[30px] leading-tight sm:leading-[36px] font-semibold text-gray-900 dark:text-white mb-6 sm:mb-8">
                 Como funciona
               </h2>
               <ol className="list-none space-y-4 sm:space-y-6">
                 {[
-                  { n: '1', text: 'Escolha o serviço e preencha os dados no checkout (nascimento, nome e e-mail).' },
-                  { n: '2', text: 'Pague com segurança e receba a confirmação por e-mail.' },
-                  { n: '3', text: 'Acesse a área do cliente e acompanhe o status do pedido.' },
-                  { n: '4', text: 'Quando o material estiver pronto visualize e baixe seu relatório.' }
+                  { n: '1', text: 'Na seção Serviços, escolha o que faz sentido e clique em «Saiba mais» para falar no WhatsApp com a mensagem já preenchida.' },
+                  { n: '2', text: 'No atendimento, alinhamos escopo, valores e prazos do serviço escolhido.' },
+                  { n: '3', text: 'Enviamos orientações sobre dados que precisamos (nascimento, nomes, contexto) conforme cada leitura.' },
+                  { n: '4', text: 'Receba o material no combinado e tire dúvidas diretamente no WhatsApp.' }
                 ].map(({ n, text }) => (
                   <li key={n} className="flex gap-3 sm:gap-4">
                     <span className="flex-shrink-0 w-10 h-10 rounded-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 flex items-center justify-center font-bold text-[14px] leading-[20px] shadow-sm">
@@ -1938,7 +1970,6 @@ export default function MysticReportApp() {
                   </li>
                 ))}
               </ol>
-              <p className="text-[13px] sm:text-[14px] leading-[20px] text-gray-500 dark:text-gray-500 mt-4">* Visualize seu relatório imediatamente</p>
             </section>
 
             {/* FAQ */}
@@ -1956,16 +1987,16 @@ export default function MysticReportApp() {
                   <p className="text-[15px] sm:text-[18px] leading-[24px] sm:leading-[28px] text-gray-600 dark:text-gray-400">Análise personalizada com seus dados</p>
                 </div>
                 <div className="bg-white dark:bg-gray-800 rounded-3xl p-4 sm:p-6 shadow-sm border border-gray-100/80 dark:border-gray-700/80 hover:shadow-md transition-shadow">
-                  <div className="flex justify-center mb-2"><Lock className="w-8 h-8 sm:w-10 sm:h-10 text-gray-700 dark:text-gray-300" /></div>
-                  <p className="text-[15px] sm:text-[18px] leading-[24px] sm:leading-[28px] text-gray-600 dark:text-gray-400">Pagamento seguro e criptografado</p>
+                  <div className="flex justify-center mb-2"><MessageCircle className="w-8 h-8 sm:w-10 sm:h-10 text-gray-700 dark:text-gray-300" /></div>
+                  <p className="text-[15px] sm:text-[18px] leading-[24px] sm:leading-[28px] text-gray-600 dark:text-gray-400">Contato direto para alinhar entrega e dúvidas</p>
                 </div>
               </div>
             </div>
           </>
         )}
 
-        {/* Progress Steps */}
-        {currentStep <= 1 && (
+        {/* Passos 1–2 do relatório online (só quando o checkout na home estiver ativo) */}
+        {PAYMENT_FORM_ENABLED && currentStep <= 1 && (
           <div className="flex justify-center mb-8 sm:mb-12">
             <div className="flex items-center space-x-4">
               <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-sm sm:text-base ${currentStep >= 1 ? 'bg-purple-500 text-white' : 'bg-gray-200 text-gray-500'}`}>
@@ -2050,7 +2081,7 @@ export default function MysticReportApp() {
           </div>
         )}
 
-        {/* Content based on current step */}
+        {/* Formulário de pagamento — ligado a PAYMENT_FORM_ENABLED / NEXT_PUBLIC_SHOW_PAYMENT_FORM */}
         {currentStep === 1 && renderDataCollection()}
         {currentStep === 2 && renderMysticReport()}
 
@@ -2064,14 +2095,14 @@ export default function MysticReportApp() {
                   Leitura estratégica  integrando numerologia, astrologia e sistemas orientais.
                 </p>
                 <p className="text-[13px] sm:text-[14px] leading-[18px] sm:leading-[20px] text-gray-500 dark:text-gray-500 mt-2">
-                  Sem promessas absolutas. Com método. • Dados protegidos • LGPD • Pagamento seguro via Kiwify
+                  Sem promessas absolutas. Com método. • Dados protegidos • LGPD • Atendimento via WhatsApp
                 </p>
               </div>
               <div>
                 <p className="text-[15px] sm:text-[16px] leading-[22px] sm:leading-[24px] font-semibold text-gray-900 dark:text-white mb-3">Produto</p>
                 <ul className="space-y-2 text-[14px] sm:text-[16px] leading-[22px] sm:leading-[24px]">
-                  <li><a href="#planos" className="text-gray-600 dark:text-gray-400 hover:underline min-h-[44px] inline-flex items-center">Plano</a></li>
-                  <li><a href="#payment-form" className="text-gray-600 dark:text-gray-400 hover:underline min-h-[44px] inline-flex items-center">Gerar mapa</a></li>
+                  <li><a href="#servicos" className="text-gray-600 dark:text-gray-400 hover:underline min-h-[44px] inline-flex items-center">Serviços</a></li>
+                  <li><a href="#como-funciona" className="text-gray-600 dark:text-gray-400 hover:underline min-h-[44px] inline-flex items-center">Como funciona</a></li>
                 </ul>
               </div>
               <div>
@@ -2096,6 +2127,111 @@ export default function MysticReportApp() {
             </p>
           </div>
         </footer>
+
+        {mentoriaWaitlistOpen && (
+          <div
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="mentoria-waitlist-title"
+            onClick={closeMentoriaWaitlist}
+          >
+            <div
+              className="relative w-full max-w-md rounded-3xl bg-white dark:bg-gray-800 shadow-2xl border border-gray-200 dark:border-gray-700 p-5 sm:p-6"
+              onClick={(ev) => ev.stopPropagation()}
+            >
+              <button
+                type="button"
+                onClick={closeMentoriaWaitlist}
+                className="absolute top-3 right-3 p-2 rounded-full text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                aria-label="Fechar"
+              >
+                <X className="w-5 h-5" />
+              </button>
+              <h3 id="mentoria-waitlist-title" className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white pr-10 mb-3">
+                Lista de espera — Mentoria
+              </h3>
+              <p className="text-sm sm:text-[15px] leading-relaxed text-gray-600 dark:text-gray-400 mb-5">
+                Nossas vagas para mentoria estão esgotadas no momento. O valor da mentoria é{' '}
+                <span className="font-semibold text-gray-800 dark:text-gray-200">R$ 800,00</span>.
+                Se quiser entrar na lista de espera, deixe seus dados e entraremos em contato em breve.
+              </p>
+              <form onSubmit={submitMentoriaWaitlist} className="space-y-4">
+                <div>
+                  <label htmlFor="mentoria-nome" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                    Nome completo *
+                  </label>
+                  <input
+                    id="mentoria-nome"
+                    type="text"
+                    autoComplete="name"
+                    required
+                    value={mentoriaForm.fullName}
+                    onChange={(e) => setMentoriaForm((f) => ({ ...f, fullName: e.target.value }))}
+                    className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-purple-400/50 focus:border-purple-400"
+                    placeholder="Seu nome"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="mentoria-telefone" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                    Telefone *
+                  </label>
+                  <input
+                    id="mentoria-telefone"
+                    type="tel"
+                    autoComplete="tel"
+                    required
+                    value={mentoriaForm.phone}
+                    onChange={(e) => setMentoriaForm((f) => ({ ...f, phone: e.target.value }))}
+                    className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-purple-400/50 focus:border-purple-400"
+                    placeholder="(11) 99999-9999"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="mentoria-email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                    E-mail *
+                  </label>
+                  <input
+                    id="mentoria-email"
+                    type="email"
+                    autoComplete="email"
+                    required
+                    value={mentoriaForm.email}
+                    onChange={(e) => setMentoriaForm((f) => ({ ...f, email: e.target.value }))}
+                    className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-purple-400/50 focus:border-purple-400"
+                    placeholder="seu@email.com"
+                  />
+                </div>
+                {mentoriaFormError && (
+                  <p className="text-sm text-red-600 dark:text-red-400" role="alert">
+                    {mentoriaFormError}
+                  </p>
+                )}
+                {mentoriaFormSuccess && (
+                  <p className="text-sm text-green-600 dark:text-green-400">
+                    Obrigada! Recebemos seus dados e entraremos em contato em breve.
+                  </p>
+                )}
+                <div className="flex flex-col-reverse sm:flex-row gap-3 pt-1">
+                  <button
+                    type="button"
+                    onClick={closeMentoriaWaitlist}
+                    className="min-h-[48px] flex-1 rounded-full border-2 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 font-medium text-sm hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                  >
+                    Fechar
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={mentoriaSubmitting}
+                    className="min-h-[48px] flex-1 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold text-sm hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
+                  >
+                    {mentoriaSubmitting ? 'Enviando…' : 'Enviar'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )
