@@ -28,27 +28,89 @@ import {
   requestNativeDocumentPrint,
   shouldUseNativeDocumentPrint,
 } from '@/lib/native-print'
+import type {
+  NumerologyResult,
+  AstrologyResult,
+  ChineseZodiac,
+  AstrocartographyResult
+} from '@/lib/mystic-report-types'
+import type { ReportVisibleSections } from '@/lib/astro-internal-plan'
+
+export type DetailedReportPayload = {
+  personalData: {
+    fullName: string
+    email?: string
+    birthDate: string
+    birthTime?: string
+    birthPlace: string
+    currentCity?: string
+  }
+  numerology?: NumerologyResult
+  astrology?: AstrologyResult
+  chineseZodiac?: ChineseZodiac
+  astrocartography?: AstrocartographyResult
+  loveCompatibility?: LoveCompatibilityResult
+}
 
 interface DetailedReportProps {
-  reportData: {
-    personalData: {
-      fullName: string
-      email?: string
-      birthDate: string
-      birthTime?: string
-      birthPlace: string
-      currentCity?: string
-    }
-    numerology: any
-    astrology: any
-    chineseZodiac: any
-    astrocartography: any
-    loveCompatibility?: LoveCompatibilityResult
+  reportData: DetailedReportPayload
+  /** Se omitido, infere do que vier preenchido (fluxo público / success). */
+  visibleSections?: ReportVisibleSections | null
+}
+
+function resolveVisible(
+  explicit: ReportVisibleSections | null | undefined,
+  reportData: DetailedReportPayload
+): ReportVisibleSections {
+  if (explicit) return explicit
+  const n = !!reportData.numerology
+  const a = !!reportData.astrology
+  const c = !!reportData.chineseZodiac
+  const ac = !!reportData.astrocartography
+  const full = n && a && c && ac
+  return {
+    numerology: n,
+    astrology: a,
+    chinese: c,
+    astrocartography: ac,
+    horoscope: full,
+    love: !!reportData.loveCompatibility
+  }
+}
+
+type SectionKey = 'numerology' | 'astrology' | 'chinese' | 'astrocartography' | 'horoscope' | 'love'
+
+function buildSectionIndex(
+  v: ReportVisibleSections,
+  has: {
+    numerology: boolean
+    astrology: boolean
+    chinese: boolean
+    astrocartography: boolean
+    love: boolean
+  }
+): (k: SectionKey) => number {
+  const order: SectionKey[] = []
+  if (v.numerology && has.numerology) order.push('numerology')
+  if (v.astrology && has.astrology) order.push('astrology')
+  if (v.chinese && has.chinese) order.push('chinese')
+  if (v.astrocartography && has.astrocartography) order.push('astrocartography')
+  if (v.horoscope) order.push('horoscope')
+  if (v.love && has.love) order.push('love')
+  return (k: SectionKey) => {
+    const i = order.indexOf(k)
+    return i >= 0 ? i + 1 : 1
   }
 }
 
 // Componente inline de horóscopo
-function HoroscopeInline({ personalData }: { personalData: { fullName: string; email?: string; birthDate: string } }) {
+function HoroscopeInline({
+  personalData,
+  sectionNumber = 5
+}: {
+  personalData: { fullName: string; email?: string; birthDate: string }
+  sectionNumber?: number
+}) {
   const [horoscope, setHoroscope] = useState<any>(null)
   const [isSubscribed, setIsSubscribed] = useState(false)
   const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'annual'>('annual')
@@ -239,7 +301,7 @@ function HoroscopeInline({ personalData }: { personalData: { fullName: string; e
           <Star className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
         </div>
         <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-gray-200 mb-2">
-          5. Horóscopo De Hoje para {horoscope.sign}
+          {sectionNumber}. Horóscopo De Hoje para {horoscope.sign}
         </h2>
         <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mb-4">
           Suas energias cósmicas e previsões para hoje
@@ -442,29 +504,44 @@ Análise astrológica para o dia atual
   )
 }
 
-export default function DetailedReport({ reportData }: DetailedReportProps) {
+export default function DetailedReport({ reportData, visibleSections }: DetailedReportProps) {
+  const v = resolveVisible(visibleSections, reportData)
   const { numerology, astrology, chineseZodiac, astrocartography, loveCompatibility } = reportData
+  const sectionNum = buildSectionIndex(v, {
+    numerology: !!numerology,
+    astrology: !!astrology,
+    chinese: !!chineseZodiac,
+    astrocartography: !!astrocartography,
+    love: !!loveCompatibility
+  })
 
-  // Interpretações de numerologia
-  const lifePathInterp = getNumberInterpretation(numerology.lifePathNumber)
-  const destinyInterp = getNumberInterpretation(numerology.destinyNumber)
-  const soulInterp = getNumberInterpretation(numerology.soulNumber)
-  const personalityInterp = getNumberInterpretation(numerology.personalityNumber)
+  const lifePathInterp = numerology != null ? getNumberInterpretation(numerology.lifePathNumber) : null
+  const destinyInterp = numerology != null ? getNumberInterpretation(numerology.destinyNumber) : null
+  const soulInterp = numerology != null ? getNumberInterpretation(numerology.soulNumber) : null
+  const personalityInterp = numerology != null ? getNumberInterpretation(numerology.personalityNumber) : null
 
-  // Interpretações de astrologia
-  const sunSignInterp = getSignInterpretation(astrology.sunSign)
-  const moonSignInterp = getSignInterpretation(astrology.moonSign)
-  const ascendantInterp = getSignInterpretation(astrology.ascendant)
+  const sunSignInterp = astrology != null ? getSignInterpretation(astrology.sunSign) : null
+  const moonSignInterp = astrology != null ? getSignInterpretation(astrology.moonSign) : null
+  const ascendantInterp = astrology != null ? getSignInterpretation(astrology.ascendant) : null
 
-  // Ano atual do zodíaco chinês e seu impacto
   const currentYear = getCurrentChineseYear()
-  const yearImpact = getYearImpact(chineseZodiac.animal, currentYear.animal)
-  const relationshipColor = getRelationshipColor(yearImpact.relationship)
+  const yearImpact =
+    chineseZodiac != null ? getYearImpact(chineseZodiac.animal, currentYear.animal) : null
+  const relationshipColor = yearImpact ? getRelationshipColor(yearImpact.relationship) : ''
 
-  // Compatibilidades e carreira (com fallbacks para relatórios antigos ou dados sem os campos)
-  const loveCompat = (chineseZodiac.loveCompatibility?.length ? chineseZodiac.loveCompatibility : chineseZodiac.compatibility) || []
-  const careerCompat = (chineseZodiac.careerCompatibility?.length ? chineseZodiac.careerCompatibility : chineseZodiac.compatibility) || []
-  const careerTalentsText = chineseZodiac.careerTalents ?? (Array.isArray(chineseZodiac.careerAdvice) ? chineseZodiac.careerAdvice.join(', ') : '')
+  const loveCompat =
+    chineseZodiac != null
+      ? (chineseZodiac.loveCompatibility?.length ? chineseZodiac.loveCompatibility : chineseZodiac.compatibility) || []
+      : []
+  const careerCompat =
+    chineseZodiac != null
+      ? (chineseZodiac.careerCompatibility?.length ? chineseZodiac.careerCompatibility : chineseZodiac.compatibility) || []
+      : []
+  const careerTalentsText =
+    chineseZodiac != null
+      ? chineseZodiac.careerTalents ??
+        (Array.isArray(chineseZodiac.careerAdvice) ? chineseZodiac.careerAdvice.join(', ') : '')
+      : ''
 
   const reportRef = useRef<HTMLDivElement>(null)
   const basicPdfRef = useRef<HTMLDivElement>(null)
@@ -579,14 +656,37 @@ export default function DetailedReport({ reportData }: DetailedReportProps) {
           {reportData.personalData.fullName} — Dados básicos
         </h1>
         <ul className="space-y-3 text-lg text-gray-800">
-          <li><strong>Caminho de vida:</strong> {numerology.lifePathNumber}</li>
-          <li><strong>Ano pessoal:</strong> {numerology.personalYear}</li>
-          <li><strong>Sol em:</strong> {sunSignInterp.name}</li>
-          <li><strong>Astrologia chinesa:</strong> {chineseZodiac.animal}</li>
+          {numerology && (
+            <>
+              <li>
+                <strong>Caminho de vida:</strong> {numerology.lifePathNumber}
+              </li>
+              <li>
+                <strong>Ano pessoal:</strong> {numerology.personalYear}
+              </li>
+            </>
+          )}
+          {sunSignInterp && (
+            <li>
+              <strong>Sol em:</strong> {sunSignInterp.name}
+            </li>
+          )}
+          {chineseZodiac && (
+            <li>
+              <strong>Astrologia chinesa:</strong> {chineseZodiac.animal}
+            </li>
+          )}
         </ul>
       </div>
 
       <div ref={reportRef} className="print-full-report-root space-y-6 sm:space-y-8 max-w-full">
+      {v.numerology &&
+        numerology &&
+        lifePathInterp &&
+        destinyInterp &&
+        soulInterp &&
+        personalityInterp && (
+        <>
       {/* Visão geral do ano — debaixo dos botões, antes da numerologia */}
       <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur rounded-2xl p-5 sm:p-6 border border-purple-200/50 dark:border-purple-700/30 shadow-lg">
         <p className="text-base sm:text-xl text-gray-800 dark:text-gray-100 text-center font-medium">
@@ -606,7 +706,7 @@ export default function DetailedReport({ reportData }: DetailedReportProps) {
             <Image src={iconNumerologia} alt="Numerologia" className="w-full h-full object-contain" />
           </div>
           <h2 className="text-2xl sm:text-4xl font-bold text-gray-800 dark:text-gray-100 mb-2 sm:mb-3">
-            1. Numerologia Pessoal Completa
+            {sectionNum('numerology')}. Numerologia Pessoal Completa
           </h2>
           <p className="text-sm sm:text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
             Seus números sagrados revelam o mapa completo de sua alma e missão nesta vida
@@ -799,28 +899,28 @@ Orientações
               <div className="bg-purple-50 dark:bg-purple-900/30 rounded-lg p-4 border-l-4 border-purple-500">
                 <div className="flex items-center justify-between mb-2">
                   <p className="font-bold text-purple-700 dark:text-purple-300">1º Ciclo - Juventude (0-28 anos)</p>
-                  <span className="text-3xl font-bold text-purple-600 dark:text-purple-400">{numerology.lifeCycles.first}</span>
+                  <span className="text-3xl font-bold text-purple-600 dark:text-purple-400">{numerology.lifeCycles[0]}</span>
                 </div>
                 <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
-                  {getLifeCycleMeaning(numerology.lifeCycles.first, 1)}
+                  {getLifeCycleMeaning(numerology.lifeCycles[0] ?? 0, 1)}
                 </p>
               </div>
               <div className="bg-pink-50 dark:bg-pink-900/30 rounded-lg p-4 border-l-4 border-pink-500">
                 <div className="flex items-center justify-between mb-2">
                   <p className="font-bold text-pink-700 dark:text-pink-300">2º Ciclo - Maturidade (28-56 anos)</p>
-                  <span className="text-3xl font-bold text-pink-600 dark:text-pink-400">{numerology.lifeCycles.second}</span>
+                  <span className="text-3xl font-bold text-pink-600 dark:text-pink-400">{numerology.lifeCycles[1]}</span>
                 </div>
                 <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
-                  {getLifeCycleMeaning(numerology.lifeCycles.second, 2)}
+                  {getLifeCycleMeaning(numerology.lifeCycles[1] ?? 0, 2)}
                 </p>
               </div>
               <div className="bg-indigo-50 dark:bg-indigo-900/30 rounded-lg p-4 border-l-4 border-indigo-500">
                 <div className="flex items-center justify-between mb-2">
                   <p className="font-bold text-indigo-700 dark:text-indigo-300">3º Ciclo - Sabedoria (56+ anos)</p>
-                  <span className="text-3xl font-bold text-indigo-600 dark:text-indigo-400">{numerology.lifeCycles.third}</span>
+                  <span className="text-3xl font-bold text-indigo-600 dark:text-indigo-400">{numerology.lifeCycles[2]}</span>
                 </div>
                 <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
-                  {getLifeCycleMeaning(numerology.lifeCycles.third, 3)}
+                  {getLifeCycleMeaning(numerology.lifeCycles[2] ?? 0, 3)}
                 </p>
               </div>
             </div>
@@ -969,15 +1069,18 @@ Orientações
           </div>
         )}
       </div>
+        </>
+      )}
 
       {/* ========== SEÇÃO 2: ASTROLOGIA OCIDENTAL ========== */}
+      {v.astrology && astrology && sunSignInterp && moonSignInterp && ascendantInterp && (
       <div id="astrologia" className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900 dark:to-indigo-900 rounded-3xl p-6 sm:p-10 shadow-2xl scroll-mt-24">
         <div className="text-center mb-8">
           <div className="w-20 h-20 flex items-center justify-center mx-auto mb-6 p-2.5">
             <Image src={iconAstrologia} alt="Astrologia" className="w-full h-full object-contain" />
           </div>
           <h2 className="text-4xl font-bold text-gray-800 dark:text-gray-100 mb-3">
-            2. Astrologia Ocidental Completa
+            {sectionNum('astrology')}. Astrologia Ocidental Completa
           </h2>
           <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
             Seu mapa celeste revela como os astros influenciam cada área da sua vida
@@ -1125,15 +1228,17 @@ Orientações
           </div>
         </div>
       </div>
+      )}
 
       {/* ========== SEÇÃO 3: ASTROLOGIA CHINESA ========== */}
+      {v.chinese && chineseZodiac && yearImpact && (
       <div id="zodiaco-chines" className="bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-900 dark:to-orange-900 rounded-3xl p-6 sm:p-10 shadow-2xl scroll-mt-24">
         <div className="text-center mb-8">
           <div className="w-20 h-20 flex items-center justify-center mx-auto mb-6 p-2.5">
             <Image src={iconChinese} alt="Zodíaco Chinês" className="w-full h-full object-contain" />
           </div>
           <h2 className="text-4xl font-bold text-gray-800 dark:text-gray-100 mb-3">
-            3. Astrologia Chinesa
+            {sectionNum('chinese')}. Astrologia Chinesa
           </h2>
           <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
             A sabedoria milenar do Oriente sobre sua personalidade e destino
@@ -1272,15 +1377,17 @@ Orientações
           </div>
         </div>
       </div>
+      )}
 
       {/* ========== SEÇÃO 4: ASTROCARTOGRAFIA ========== */}
+      {v.astrocartography && astrocartography && (
       <div id="astrocartografia" className="bg-gradient-to-br from-green-50 to-teal-50 dark:from-green-900 dark:to-teal-900 rounded-3xl p-6 sm:p-10 shadow-2xl scroll-mt-24">
         <div className="text-center mb-8">
           <div className="w-20 h-20 flex items-center justify-center mx-auto mb-6 p-2.5">
             <Image src={iconCartografia} alt="Astrocartografia" className="w-full h-full object-contain" />
           </div>
           <h2 className="text-4xl font-bold text-gray-800 dark:text-gray-100 mb-3">
-            4. Astrocartografia
+            {sectionNum('astrocartography')}. Astrocartografia
           </h2>
           <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
             Descubra os locais do mundo onde sua energia flui melhor
@@ -1459,15 +1566,20 @@ Orientações
           </div>
         )}
       </div>
+      )}
 
       {/* Seção 5: Horóscopo Diário */}
+      {v.horoscope && (
       <div id="horoscope-section" className="bg-gradient-to-r from-yellow-50 to-amber-50 dark:from-yellow-900/30 dark:to-amber-900/30 rounded-2xl p-6 sm:p-8 scroll-mt-24">
-        {/* Import do componente de horóscopo inline */}
-        <HoroscopeInline personalData={reportData.personalData} />
+        <HoroscopeInline
+          personalData={reportData.personalData}
+          sectionNumber={sectionNum('horoscope')}
+        />
       </div>
+      )}
 
       {/* ========== SEÇÃO 6: COMPATIBILIDADE AMOROSA ========== */}
-      {loveCompatibility && (
+      {v.love && loveCompatibility && (
         <div id="compatibilidade" className="bg-gradient-to-br from-pink-50 to-rose-50 dark:from-pink-900 dark:to-rose-900 rounded-3xl p-6 sm:p-10 shadow-2xl scroll-mt-24">
           <div className="text-center mb-8">
             <div className="w-20 h-20 flex items-center justify-center mx-auto mb-6 p-2.5">
@@ -1476,7 +1588,7 @@ Orientações
               </div>
             </div>
             <h2 className="text-4xl font-bold text-gray-800 dark:text-gray-100 mb-3">
-              6. Compatibilidade
+              {sectionNum('love')}. Compatibilidade
             </h2>
             <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
               Compatibilidade amorosa com {loveCompatibility.partnerFullName}

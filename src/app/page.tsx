@@ -284,6 +284,12 @@ export default function MysticReportApp() {
     }
   }, [currentStep])
 
+  useEffect(() => {
+    if (selectedPlan !== 'love_compatibility') {
+      setPersonalData((prev) => ({ ...prev, partnerFullName: '', partnerBirthDate: '' }))
+    }
+  }, [selectedPlan])
+
   const handlePayment = async () => {
     setIsProcessingPayment(true)
     setPaymentError(null)
@@ -563,15 +569,50 @@ export default function MysticReportApp() {
                 }`}
               >
                 <div className="flex items-center justify-between mb-2">
-                  <span className="font-semibold text-gray-800 dark:text-gray-200">+ Compatibilidade no relatório</span>
+                  <span className="font-semibold text-gray-800 dark:text-gray-200">+ Compatibilidade amorosa no relatório</span>
                   {selectedPlan === 'love_compatibility' && <CheckCircle className="w-5 h-5 text-pink-500 flex-shrink-0" />}
                 </div>
                 <p className="text-sm font-medium text-pink-600 dark:text-pink-400 mb-2">Tudo da opção anterior</p>
                 <p className="text-xs text-gray-600 dark:text-gray-400">
-                  Inclui nome e data do(a) parceiro(a) e um bloco extra de compatibilidade no mesmo relatório online.
+                  Os dados do(a) parceiro(a) aparecem logo abaixo (obrigatórios). Bloco extra de compatibilidade no mesmo relatório.
                 </p>
               </button>
             </div>
+
+            {selectedPlan === 'love_compatibility' && (
+              <div className="mt-4 rounded-2xl border-2 border-pink-300 dark:border-pink-600 bg-pink-50/80 dark:bg-pink-950/40 p-4 sm:p-5 shadow-sm">
+                <p className="text-sm font-semibold text-pink-900 dark:text-pink-100 mb-1">Compatibilidade amorosa</p>
+                <p className="text-xs text-pink-800/90 dark:text-pink-200/90 mb-4">
+                  Preencha nome e data de nascimento do(a) parceiro(a) para incluir a análise a dois no relatório.
+                </p>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-800 dark:text-gray-200 mb-2">
+                      Nome completo do(a) parceiro(a) *
+                    </label>
+                    <input
+                      type="text"
+                      value={personalData.partnerFullName ?? ''}
+                      onChange={(e) => setPersonalData((prev) => ({ ...prev, partnerFullName: e.target.value }))}
+                      className="w-full px-4 sm:px-5 py-3 sm:py-3.5 border border-pink-200 dark:border-pink-700 rounded-2xl focus:ring-2 focus:ring-pink-400/50 focus:border-pink-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm sm:text-base transition-shadow focus:shadow-md"
+                      placeholder="Nome completo do(a) parceiro(a)"
+                      autoComplete="name"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-800 dark:text-gray-200 mb-2">
+                      Data de nascimento do(a) parceiro(a) *
+                    </label>
+                    <input
+                      type="date"
+                      value={personalData.partnerBirthDate ?? ''}
+                      onChange={(e) => setPersonalData((prev) => ({ ...prev, partnerBirthDate: e.target.value }))}
+                      className="w-full px-4 sm:px-5 py-3 sm:py-3.5 border border-pink-200 dark:border-pink-700 rounded-2xl focus:ring-2 focus:ring-pink-400/50 focus:border-pink-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm sm:text-base transition-shadow focus:shadow-md"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -723,40 +764,6 @@ export default function MysticReportApp() {
               Para benefícios e pontos de atenção na astrocartografia do seu dia a dia
             </p>
           </div>
-
-          {selectedPlan === 'love_compatibility' && (
-            <>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Nome completo do(a) parceiro(a) *
-                </label>
-                <input
-                  type="text"
-                  value={personalData.partnerFullName ?? ''}
-                  onChange={(e) => setPersonalData(prev => ({ ...prev, partnerFullName: e.target.value }))}
-                  className="w-full px-4 sm:px-5 py-3 sm:py-3.5 border border-gray-200 dark:border-gray-600 rounded-2xl focus:ring-2 focus:ring-pink-400/50 focus:border-pink-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm sm:text-base transition-shadow focus:shadow-md"
-                  placeholder="Nome completo do(a) parceiro(a)"
-                />
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                  Para gerar o bloco de compatibilidade amorosa no relatório
-                </p>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Data de nascimento do(a) parceiro(a) *
-                </label>
-                <input
-                  type="date"
-                  value={personalData.partnerBirthDate ?? ''}
-                  onChange={(e) => setPersonalData(prev => ({ ...prev, partnerBirthDate: e.target.value }))}
-                  className="w-full px-4 sm:px-5 py-3 sm:py-3.5 border border-gray-200 dark:border-gray-600 rounded-2xl focus:ring-2 focus:ring-pink-400/50 focus:border-pink-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm sm:text-base transition-shadow focus:shadow-md"
-                />
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                  Base para cálculo de signos e compatibilidade
-                </p>
-              </div>
-            </>
-          )}
 
           {/* Erro de pagamento */}
           {paymentError && (
