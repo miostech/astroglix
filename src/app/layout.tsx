@@ -2,6 +2,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Script from "next/script";
+import { SiteVisitTracker } from "@/components/SiteVisitTracker";
 import "./globals.css";
 // Import all available fonts for AI usage
 import "../lib/fonts";
@@ -40,6 +41,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <SiteVisitTracker />
         {children}
       </body>
     </html>

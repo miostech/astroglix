@@ -24,6 +24,7 @@ import {
 } from '@/lib/mystic-report-calculations'
 import { calculateLoveCompatibility, type LoveCompatibilityResult } from '@/lib/love-compatibility'
 import DetailedReport from '@/components/DetailedReport'
+import { AstroSiteVisitStats } from '@/components/AstroSiteVisitStats'
 import iconAstrologia from '@/app/icon_astrologia.png'
 import iconChinese from '@/app/icon_chinese.png'
 import iconCartografia from '@/app/icon_cartografia.png'
@@ -197,6 +198,7 @@ export default function AstroInternalPage() {
 
   return (
     <div className="min-h-screen min-h-[100dvh] bg-gradient-to-br from-purple-50 via-pink-50 to-indigo-50 dark:from-gray-900 dark:via-purple-900 dark:to-indigo-900 overflow-x-hidden">
+      <AstroSiteVisitStats />
       <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8 max-w-full">
         <header className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 max-w-xl">
