@@ -214,6 +214,9 @@ const getPersonalizedQuote = (personalData: PersonalData) => {
  */
 const PAYMENT_FORM_ENABLED = process.env.NEXT_PUBLIC_SHOW_PAYMENT_FORM === 'true'
 
+/** Enquanto o campo de e-mail do formulário estiver oculto, o checkout usa este valor na API (Kiwify exige e-mail). */
+const CHECKOUT_EMAIL_PLACEHOLDER = 'checkout@pendente.astroglix.com'
+
 export default function MysticReportApp() {
   const [personalData, setPersonalData] = useState<PersonalData>({
     fullName: '',
@@ -300,9 +303,7 @@ export default function MysticReportApp() {
         throw new Error('Por favor, preencha seu nome completo antes de continuar.')
       }
 
-      if (!personalData.email.trim()) {
-        throw new Error('Por favor, preencha seu e-mail antes de continuar.')
-      }
+      const checkoutEmail = personalData.email.trim() || CHECKOUT_EMAIL_PLACEHOLDER
 
       if (!personalData.birthDate) {
         throw new Error('Por favor, preencha sua data de nascimento antes de continuar.')
@@ -337,11 +338,11 @@ export default function MysticReportApp() {
           currency: 'BRL',
           customerData: {
             name: personalData.fullName.trim(),
-            email: personalData.email.trim()
+            email: checkoutEmail
           },
           personalData: {
             fullName: personalData.fullName.trim(),
-            email: personalData.email.trim(),
+            email: checkoutEmail,
             birthDate: personalData.birthDate,
             birthTime: personalData.birthTime ?? '',
             birthPlace: personalData.birthPlace.trim(),
@@ -368,7 +369,7 @@ export default function MysticReportApp() {
       if (typeof window !== 'undefined') {
         window.localStorage.setItem('last_payment_id', data.paymentId ?? '')
         window.localStorage.setItem('last_customer_name', personalData.fullName.trim())
-        window.localStorage.setItem('last_customer_email', personalData.email.trim())
+        window.localStorage.setItem('last_customer_email', checkoutEmail)
         if (selectedPlan === 'love_compatibility' && personalData.partnerFullName?.trim() && personalData.partnerBirthDate?.trim()) {
           window.localStorage.setItem('last_partner_full_name', personalData.partnerFullName.trim())
           window.localStorage.setItem('last_partner_birth_date', personalData.partnerBirthDate.trim())
@@ -633,6 +634,7 @@ export default function MysticReportApp() {
             </p>
           </div>
 
+          {/* E-mail desativado por enquanto — reativar quando for usar.
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               E-mail *
@@ -648,6 +650,7 @@ export default function MysticReportApp() {
               Necessário para processar o pagamento e enviar sua análise
             </p>
           </div>
+          */}
 
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -787,7 +790,7 @@ export default function MysticReportApp() {
           <button
             onClick={handlePayment}
             disabled={
-              !personalData.fullName.trim() || !personalData.email.trim() || !personalData.birthDate ||
+              !personalData.fullName.trim() || !personalData.birthDate ||
               !personalData.birthPlace.trim() || !personalData.currentCity.trim() || isProcessingPayment ||
               (selectedPlan === 'love_compatibility' && (!personalData.partnerFullName?.trim() || !personalData.partnerBirthDate?.trim()))
             }
@@ -837,7 +840,7 @@ export default function MysticReportApp() {
     const reportData = {
       personalData: {
         fullName: personalData.fullName,
-        email: personalData.email,
+        ...(personalData.email.trim() ? { email: personalData.email.trim() } : {}),
         birthDate: personalData.birthDate,
         birthTime: personalData.birthTime,
         birthPlace: personalData.birthPlace,

@@ -113,10 +113,6 @@ export default function AstroInternalPage() {
       setFormError('Preencha seu nome completo.')
       return
     }
-    if (!personalData.email.trim()) {
-      setFormError('Preencha seu e-mail.')
-      return
-    }
     if (!personalData.birthDate) {
       setFormError('Preencha a data de nascimento.')
       return
@@ -207,7 +203,7 @@ export default function AstroInternalPage() {
   const reportSections = getReportVisibleSections(selectedPlan)
 
   const canSubmitForm = useMemo(() => {
-    if (!personalData.fullName.trim() || !personalData.email.trim() || !personalData.birthDate) return false
+    if (!personalData.fullName.trim() || !personalData.birthDate) return false
     if (formVis.showBirthPlace && !personalData.birthPlace.trim()) return false
     if (formVis.showCurrentCity && !personalData.currentCity.trim()) return false
     if (formVis.showPartner && (!personalData.partnerFullName?.trim() || !personalData.partnerBirthDate?.trim())) {
@@ -221,7 +217,7 @@ export default function AstroInternalPage() {
     ({
       personalData: {
         fullName: personalData.fullName,
-        email: personalData.email,
+        ...(personalData.email.trim() ? { email: personalData.email.trim() } : {}),
         birthDate: personalData.birthDate,
         birthTime: personalData.birthTime,
         birthPlace: personalData.birthPlace,
@@ -498,6 +494,7 @@ export default function AstroInternalPage() {
                     placeholder="Seu nome completo como no documento"
                   />
                 </div>
+                {/* E-mail desativado por enquanto — reativar quando for usar.
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">E-mail *</label>
                   <input
@@ -509,6 +506,7 @@ export default function AstroInternalPage() {
                   />
                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Usado no relatório e no horóscopo inline, se aplicável.</p>
                 </div>
+                */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Data de nascimento *</label>
                   <input
